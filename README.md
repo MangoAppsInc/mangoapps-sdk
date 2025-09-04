@@ -264,7 +264,7 @@ The SDK uses a modular architecture that makes adding new APIs simple:
 #### Using the Module Generator (Recommended)
 ```bash
 # Generate a new module with tests
-ruby generate_module.rb Files
+ruby generate_module.rb Files files_list files
 
 # This creates:
 # - lib/mangoapps/modules/files.rb
@@ -273,10 +273,21 @@ ruby generate_module.rb Files
 ```
 
 #### Manual Module Creation
-1. Create module file: `lib/mangoapps/modules/your_module.rb`
-2. Create test file: `spec/mangoapps/your_module_spec.rb`
-3. Update `lib/mangoapps.rb` to include the module
-4. Update `run_tests.sh` to run the new tests
+1. **Copy the template**: `cp spec/module_template.rb spec/mangoapps/your_module_spec.rb`
+2. **Replace placeholders** in the template:
+   - `[MODULE_NAME]` → Your module name (e.g., "Files")
+   - `[ENDPOINT_METHOD]` → Your API method (e.g., "files_list")
+   - `[RESPONSE_KEY]` → Expected response key (e.g., "files")
+   - `[FEATURE_NAME]` → Feature description (e.g., "File Management")
+3. **Create module file**: `lib/mangoapps/modules/your_module.rb`
+4. **Update includes**: Add to `lib/mangoapps.rb` and `run_tests.sh`
+
+#### Module Template Structure
+The `spec/module_template.rb` provides a clean, minimal template with:
+- ✅ **Basic RSpec structure** with token validation
+- ✅ **Single feature test example** using helper methods
+- ✅ **Clear placeholder comments** for easy customization
+- ✅ **Helper method usage** (`test_api_endpoint`, `validate_array_response`)
 
 See [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) for detailed guidelines.
 

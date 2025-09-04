@@ -39,6 +39,7 @@ mangoapps-sdk/
 ├── spec/
 │   ├── real_spec_helper.rb       # RSpec configuration (real tests only)
 │   ├── shared_test_helpers.rb    # Reusable test helpers
+│   ├── module_template.rb        # Template for new module tests
 │   └── mangoapps/
 │       ├── learn_spec.rb         # Learn module tests
 │       └── users_spec.rb         # Users module tests
@@ -80,6 +81,15 @@ mangoapps-sdk/
 
 ## Resource Development Pattern
 When adding a new resource (e.g., Files, Users):
+
+### Using the Module Template (Recommended)
+1. **Copy the template**: `cp spec/module_template.rb spec/mangoapps/your_module_spec.rb`
+2. **Replace placeholders**:
+   - `[MODULE_NAME]` → Your module name (e.g., "Files")
+   - `[ENDPOINT_METHOD]` → Your API method (e.g., "files_list")
+   - `[RESPONSE_KEY]` → Expected response key (e.g., "files")
+   - `[FEATURE_NAME]` → Feature description (e.g., "File Management")
+3. **Customize validation** for your specific endpoint
 
 ### For Learn Module Resources
 1. **Add Real Test to Learn Spec**:
@@ -162,7 +172,8 @@ MangoApps::Client.include(MangoApps::Client::YourModule)
 ## Common Commands
 - `./run_auth.sh` - Get fresh OAuth token (interactive)
 - `./run_tests.sh` - Run API tests (fast, requires valid token)
-- `ruby generate_module.rb ModuleName` - Generate new module with tests
+- `ruby generate_module.rb ModuleName endpoint_method response_key` - Generate new module with tests
+- `cp spec/module_template.rb spec/mangoapps/your_module_spec.rb` - Copy module template
 - `bundle exec rspec spec/mangoapps/` - Run all tests
 - `bundle exec rspec spec/mangoapps/learn_spec.rb` - Run specific module tests
 - `bundle exec rspec --format documentation` - Verbose test output

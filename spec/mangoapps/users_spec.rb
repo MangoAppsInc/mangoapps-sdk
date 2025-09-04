@@ -22,66 +22,65 @@ RSpec.describe "MangoApps Users Module" do
       
       response = client.me
       
-      expect(response).to be_a(Hash) # Users API returns parsed JSON
-      expect(response).to have_key("ms_response")
-      expect(response["ms_response"]).to have_key("user_profile")
+      expect(response).to be_a(MangoApps::Response) # Users API returns wrapped response
+      expect(response).to respond_to(:user_profile)
       puts "✅ User profile API call successful!"
       puts "📊 Response contains user profile data"
       
       # Validate the user profile structure
-      user_profile = response["ms_response"]["user_profile"]
+      user_profile = response.user_profile
       
-      # Validate minimal_profile structure
-      expect(user_profile).to have_key("minimal_profile")
-      minimal_profile = user_profile["minimal_profile"]
+      # Validate minimal_profile structure using dot notation
+      expect(user_profile).to respond_to(:minimal_profile)
+      minimal_profile = user_profile.minimal_profile
       
-      expect(minimal_profile).to have_key("id")
-      expect(minimal_profile).to have_key("name")
-      expect(minimal_profile).to have_key("user_type")
-      expect(minimal_profile).to have_key("user_first_name")
-      expect(minimal_profile).to have_key("user_last_name")
-      expect(minimal_profile).to have_key("email")
-      expect(minimal_profile).to have_key("user_mention")
-      expect(minimal_profile).to have_key("photo")
-      expect(minimal_profile).to have_key("image_url")
+      expect(minimal_profile).to respond_to(:id)
+      expect(minimal_profile).to respond_to(:name)
+      expect(minimal_profile).to respond_to(:user_type)
+      expect(minimal_profile).to respond_to(:user_first_name)
+      expect(minimal_profile).to respond_to(:user_last_name)
+      expect(minimal_profile).to respond_to(:email)
+      expect(minimal_profile).to respond_to(:user_mention)
+      expect(minimal_profile).to respond_to(:photo)
+      expect(minimal_profile).to respond_to(:image_url)
       
-      # Validate user_data structure
-      expect(user_profile).to have_key("user_data")
-      user_data = user_profile["user_data"]
+      # Validate user_data structure using dot notation
+      expect(user_profile).to respond_to(:user_data)
+      user_data = user_profile.user_data
       
-      expect(user_data).to have_key("state")
-      expect(user_data).to have_key("followers")
-      expect(user_data).to have_key("following")
-      expect(user_data).to have_key("created_at")
-      expect(user_data).to have_key("time_zone")
+      expect(user_data).to respond_to(:state)
+      expect(user_data).to respond_to(:followers)
+      expect(user_data).to respond_to(:following)
+      expect(user_data).to respond_to(:created_at)
+      expect(user_data).to respond_to(:time_zone)
       
-      # Validate gamification structure
-      expect(user_profile).to have_key("gamification")
-      gamification = user_profile["gamification"]
+      # Validate gamification structure using dot notation
+      expect(user_profile).to respond_to(:gamification)
+      gamification = user_profile.gamification
       
-      expect(gamification).to have_key("current_level")
-      expect(gamification).to have_key("current_points")
-      expect(gamification).to have_key("total_points")
-      expect(gamification).to have_key("badges")
-      expect(gamification["badges"]).to be_a(Array)
+      expect(gamification).to respond_to(:current_level)
+      expect(gamification).to respond_to(:current_points)
+      expect(gamification).to respond_to(:total_points)
+      expect(gamification).to respond_to(:badges)
+      expect(gamification.badges).to be_a(Array)
       
-      # Validate recognition structure
-      expect(user_profile).to have_key("recognition")
-      recognition = user_profile["recognition"]
+      # Validate recognition structure using dot notation
+      expect(user_profile).to respond_to(:recognition)
+      recognition = user_profile.recognition
       
-      expect(recognition).to have_key("total_reward_points_received")
-      expect(recognition).to have_key("total_reward_points_allocated")
+      expect(recognition).to respond_to(:total_reward_points_received)
+      expect(recognition).to respond_to(:total_reward_points_allocated)
       
       puts "✅ User profile structure validated"
-      puts "📊 User ID: #{minimal_profile['id']}"
-      puts "📊 User Name: #{minimal_profile['name']}"
-      puts "📊 User Email: #{minimal_profile['email']}"
-      puts "📊 User Type: #{minimal_profile['user_type']}"
-      puts "📊 Followers: #{user_data['followers']}"
-      puts "📊 Following: #{user_data['following']}"
-      puts "📊 Current Level: #{gamification['current_level']}"
-      puts "📊 Total Points: #{gamification['total_points']}"
-      puts "📊 Badges Count: #{gamification['badges'].length}"
+      puts "📊 User ID: #{minimal_profile.id}"
+      puts "📊 User Name: #{minimal_profile.name}"
+      puts "📊 User Email: #{minimal_profile.email}"
+      puts "📊 User Type: #{minimal_profile.user_type}"
+      puts "📊 Followers: #{user_data.followers}"
+      puts "📊 Following: #{user_data.following}"
+      puts "📊 Current Level: #{gamification.current_level}"
+      puts "📊 Total Points: #{gamification.total_points}"
+      puts "📊 Badges Count: #{gamification.badges.length}"
     end
   end
 

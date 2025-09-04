@@ -11,6 +11,7 @@ You are working on the MangoApps SDK, a Ruby gem for interacting with MangoApps 
 - **OAuth2/OIDC**: Proper authentication flow with real credentials
 - **Faraday HTTP**: With retries and JSON handling
 - **Environment Variables**: Secure credential management
+- **Clean Response API**: Automatic response wrapping with intuitive dot notation access
 
 ## Technology Stack
 - **Language**: Ruby (>= 3.0)
@@ -28,6 +29,7 @@ mangoapps-sdk/
 │   ├── mangoapps/config.rb       # Configuration
 │   ├── mangoapps/client.rb       # HTTP client
 │   ├── mangoapps/oauth.rb        # OAuth2/OIDC
+│   ├── mangoapps/response.rb     # Response wrapper for clean dot notation
 │   ├── mangoapps/errors.rb       # Error classes
 │   ├── mangoapps/version.rb      # Version info
 │   └── mangoapps/modules/        # API modules
@@ -73,11 +75,13 @@ mangoapps-sdk/
 ## Testing Guidelines
 - **Real OAuth Testing Only**: No mocking, use actual MangoApps API
 - **Positive Test Cases Only**: Focus on successful API calls, no error handling tests
+- **Clean Response Validation**: Test `MangoApps::Response` objects with dot notation
 - Use descriptive test names
 - Use environment variables for OAuth credentials
 - Test against actual MangoApps domain
-- Assert on real API responses
+- Assert on real API responses with clean dot notation access
 - Keep tests simple and focused on functionality
+- Validate response structure using `respond_to?` instead of `have_key`
 
 ## Resource Development Pattern
 When adding a new resource (e.g., Files, Users):
@@ -101,8 +105,8 @@ describe "New Learn Resource" do
     
     response = client.new_learn_endpoint
     
-    expect(response).to be_a(Hash) # Learn APIs typically return JSON
-    expect(response).to have_key("ms_response")
+    expect(response).to be_a(MangoApps::Response) # Clean response wrapper
+    expect(response).to respond_to(:expected_key)
     puts "✅ New Learn API call successful!"
     puts "📊 Response contains expected data structure"
   end
@@ -118,7 +122,8 @@ describe "Your API" do
     
     response = client.your_endpoint
     
-    expect(response).to be_a(Hash) # Most APIs return JSON
+    expect(response).to be_a(MangoApps::Response) # Clean response wrapper
+    expect(response).to respond_to(:expected_key)
     puts "✅ Your API call successful!"
     puts "📊 Response contains expected data"
   end

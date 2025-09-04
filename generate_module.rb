@@ -115,8 +115,7 @@ def generate_module(module_name, endpoint_method, response_key)
           begin
             response = client.#{endpoint_method}
             puts "✅ #{module_name_capitalized} API authentication working"
-            expect(response).to be_a(Hash)
-            expect(response).to have_key("ms_response")
+            expect(response).to be_a(MangoApps::Response)
           rescue MangoApps::APIError => e
             if e.status_code == 401
               puts "❌ #{module_name_capitalized} API authentication failed"

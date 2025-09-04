@@ -22,24 +22,23 @@ RSpec.describe "MangoApps Learn Module" do
       
       response = client.course_catalog
       
-      expect(response).to be_a(Hash) # Learn API returns parsed JSON
-      expect(response).to have_key("ms_response")
-      expect(response["ms_response"]).to have_key("courses")
-      expect(response["ms_response"]["courses"]).to be_an(Array)
+      expect(response).to be_a(MangoApps::Response) # Learn API returns wrapped response
+      expect(response).to respond_to(:courses)
+      expect(response.courses).to be_an(Array)
       puts "✅ Course catalog API call successful!"
       puts "📊 Response contains course catalog data"
       
-      # Validate the course structure
-      if response["ms_response"]["courses"].any?
-        course = response["ms_response"]["courses"].first
-        expect(course).to have_key("id")
-        expect(course).to have_key("name")
-        expect(course).to have_key("course_type")
-        expect(course).to have_key("delivery_mode")
-        expect(course).to have_key("start_course_url")
+      # Validate the course structure using dot notation
+      if response.courses.any?
+        course = response.courses.first
+        expect(course).to respond_to(:id)
+        expect(course).to respond_to(:name)
+        expect(course).to respond_to(:course_type)
+        expect(course).to respond_to(:delivery_mode)
+        expect(course).to respond_to(:start_course_url)
         puts "✅ Course catalog structure validated"
-        puts "📊 Found #{response['ms_response']['courses'].length} courses"
-        puts "📚 Sample course: #{course['name']} (ID: #{course['id']})"
+        puts "📊 Found #{response.courses.length} courses"
+        puts "📚 Sample course: #{course.name} (ID: #{course.id})"
       else
         puts "📊 Course catalog is empty"
       end
@@ -52,23 +51,22 @@ RSpec.describe "MangoApps Learn Module" do
       
       response = client.course_categories
       
-      expect(response).to be_a(Hash) # Learn API returns parsed JSON
-      expect(response).to have_key("ms_response")
-      expect(response["ms_response"]).to have_key("all_categories")
-      expect(response["ms_response"]["all_categories"]).to be_an(Array)
+      expect(response).to be_a(MangoApps::Response) # Learn API returns wrapped response
+      expect(response).to respond_to(:all_categories)
+      expect(response.all_categories).to be_an(Array)
       puts "✅ Course categories API call successful!"
       puts "📊 Response contains course categories data"
       
-      # Validate the category structure
-      if response["ms_response"]["all_categories"].any?
-        category = response["ms_response"]["all_categories"].first
-        expect(category).to have_key("id")
-        expect(category).to have_key("name")
-        expect(category).to have_key("icon_properties")
-        expect(category).to have_key("position")
+      # Validate the category structure using dot notation
+      if response.all_categories.any?
+        category = response.all_categories.first
+        expect(category).to respond_to(:id)
+        expect(category).to respond_to(:name)
+        expect(category).to respond_to(:icon_properties)
+        expect(category).to respond_to(:position)
         puts "✅ Course categories structure validated"
-        puts "📊 Found #{response['ms_response']['all_categories'].length} categories"
-        puts "📂 Sample category: #{category['name']} (ID: #{category['id']})"
+        puts "📊 Found #{response.all_categories.length} categories"
+        puts "📂 Sample category: #{category.name} (ID: #{category.id})"
       else
         puts "📊 Course categories list is empty"
       end

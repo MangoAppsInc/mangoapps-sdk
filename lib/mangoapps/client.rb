@@ -109,7 +109,7 @@ module MangoApps
         req.params.update(params) if params
       end
 
-      return response.body if response.success?
+      return wrap_response(response.body) if response.success?
 
       handle_error_response(response, request_details)
     end
@@ -170,6 +170,12 @@ module MangoApps
         response_body: response.body,
         request_details: request_details
       )
+    end
+
+    def wrap_response(data)
+      return data unless data.is_a?(Hash)
+      
+      MangoApps::Response.new(data)
     end
 
     def extract_error_message(response)

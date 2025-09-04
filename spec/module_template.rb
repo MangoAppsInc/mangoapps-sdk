@@ -21,6 +21,7 @@ RSpec.describe "MangoApps [MODULE_NAME] Module" do
   # Replace [MODULE_NAME] with your actual module name (e.g., "Files", "Projects", etc.)
   # Replace [ENDPOINT_METHOD] with your actual endpoint method (e.g., "files_list", "projects_list", etc.)
   # Replace [RESPONSE_KEY] with the expected response key (e.g., "files", "projects", etc.)
+  # Note: All responses are automatically wrapped in MangoApps::Response for clean dot notation access
 
   describe "[FEATURE_NAME]" do
     it "gets [feature description]" do

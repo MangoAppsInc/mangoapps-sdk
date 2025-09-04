@@ -1,17 +1,18 @@
 # MangoApps Ruby SDK
 
-A clean, **real TDD** Ruby SDK for MangoApps APIs with OAuth2/OpenID Connect authentication. No mocking - only actual OAuth testing with real MangoApps credentials.
+A clean, **real TDD** Ruby SDK for MangoApps APIs with OAuth2/OpenID Connect authentication. Features intuitive dot notation access, automatic response wrapping, and comprehensive real-world testing with actual MangoApps credentials.
 
 ## Features
 
 - 🔐 **OAuth2/OpenID Connect** authentication with automatic token refresh
-- 🚀 **Simple API** with intuitive method names
+- 🚀 **Simple API** with intuitive method names and clean dot notation
 - 🧪 **Real TDD** - no mocking, only actual OAuth testing
 - 🔄 **Automatic retries** with exponential backoff
 - 📝 **Comprehensive error handling** with specific exception types
 - 🛡️ **Security-first** design with PKCE support
 - 🔧 **Environment variable configuration** for secure credentials
 - 📚 **Well-documented** with examples and guides
+- ✨ **Clean Response API** - Automatic response wrapping with intuitive dot notation access
 
 ## Installation
 
@@ -86,9 +87,31 @@ puts "Open this URL to authorize: #{auth_url}"
 # After user authorizes, exchange code for tokens
 client.authenticate!(authorization_code: params[:code])
 
-# Now you can make API calls
-posts = client.posts_list
+# Now you can make API calls with clean dot notation
+user = client.me
+puts "Welcome, #{user.user_profile.minimal_profile.name}!"
 ```
+
+## Response Format
+
+The SDK automatically wraps all API responses in a `MangoApps::Response` object that provides clean dot notation access:
+
+```ruby
+# Clean dot notation access (automatic response wrapping):
+user = client.me
+name = user.user_profile.minimal_profile.name
+email = user.user_profile.minimal_profile.email
+```
+
+### Response Features
+
+- **🎯 Dot Notation Access**: `response.user.name` for clean, intuitive API access
+- **🔄 Automatic Wrapping**: All responses are automatically wrapped in `MangoApps::Response`
+- **🔗 Hash Compatibility**: Still supports `[]` access if needed
+- **📊 Enumerable Support**: Arrays and hashes work as expected
+- **🔍 Raw Data Access**: Use `response.raw_data` for original response
+- **⚡ Type Safety**: Better IDE support and autocomplete
+- **🎨 Clean Code**: No more verbose nested hash access
 
 ## API Resources
 
@@ -98,10 +121,11 @@ posts = client.posts_list
 # Get current user profile
 user = client.me
 
-# Access user data
-puts "User: #{user['ms_response']['user']['name']}"
-puts "Email: #{user['ms_response']['user']['email']}"
-puts "Points: #{user['ms_response']['user']['total_points']}"
+# Access user data with clean dot notation
+puts "User: #{user.user_profile.minimal_profile.name}"
+puts "Email: #{user.user_profile.minimal_profile.email}"
+puts "Points: #{user.user_profile.gamification.total_points}"
+puts "Followers: #{user.user_profile.user_data.followers}"
 ```
 
 ### Learn Module
@@ -111,9 +135,9 @@ puts "Points: #{user['ms_response']['user']['total_points']}"
 # Get course catalog
 courses = client.course_catalog
 
-# Access course data
-courses["ms_response"]["courses"].each do |course|
-  puts "#{course['name']} - #{course['course_type']}"
+# Access course data with clean dot notation
+courses.courses.each do |course|
+  puts "#{course.name} - #{course.course_type}"
 end
 ```
 
@@ -122,9 +146,9 @@ end
 # Get all course categories
 categories = client.course_categories
 
-# Access category data
-categories["ms_response"]["all_categories"].each do |category|
-  puts "#{category['name']} - Position: #{category['position']}"
+# Access category data with clean dot notation
+categories.all_categories.each do |category|
+  puts "#{category.name} - Position: #{category.position}"
 end
 
 # Get specific category details
@@ -136,11 +160,84 @@ category = client.course_category(category_id)
 ### ✅ Currently Implemented
 
 #### Users Module
-- **User Profile**: `client.me` - Get current user information
+- **User Profile**: `client.me` - Get current user information with clean dot notation access
 
 #### Learn Module  
 - **Course Catalog**: `client.course_catalog` - Get available courses
 - **Course Categories**: `client.course_categories` - Get course categories
+
+## Complete Examples
+
+### User Profile Management
+```ruby
+# Get current user profile
+user = client.me
+
+# Access user information with clean dot notation
+puts "Name: #{user.user_profile.minimal_profile.name}"
+puts "Email: #{user.user_profile.minimal_profile.email}"
+puts "User Type: #{user.user_profile.minimal_profile.user_type}"
+
+# Access user statistics
+puts "Followers: #{user.user_profile.user_data.followers}"
+puts "Following: #{user.user_profile.user_data.following}"
+
+# Access gamification data
+puts "Current Level: #{user.user_profile.gamification.current_level}"
+puts "Total Points: #{user.user_profile.gamification.total_points}"
+puts "Badges: #{user.user_profile.gamification.badges.length}"
+
+# Access recognition data
+puts "Reward Points Received: #{user.user_profile.recognition.total_reward_points_received}"
+```
+
+### Learning Management
+```ruby
+# Get course catalog
+courses = client.course_catalog
+
+# Browse available courses
+courses.courses.each do |course|
+  puts "📚 #{course.name}"
+  puts "   Type: #{course.course_type}"
+  puts "   Delivery: #{course.delivery_mode}"
+  puts "   URL: #{course.start_course_url}"
+  puts ""
+end
+
+# Get course categories
+categories = client.course_categories
+
+# Browse course categories
+categories.all_categories.each do |category|
+  puts "📂 #{category.name}"
+  puts "   Position: #{category.position}"
+  puts "   Icon: #{category.icon_properties}"
+  puts ""
+end
+```
+
+### Error Handling with Clean Responses
+```ruby
+begin
+  user = client.me
+  
+  # Clean dot notation access
+  puts "Welcome, #{user.user_profile.minimal_profile.name}!"
+  
+rescue MangoApps::AuthenticationError => e
+  puts "Authentication failed: #{e.message}"
+  # Redirect to OAuth flow
+  
+rescue MangoApps::APIError => e
+  puts "API error: #{e.message}"
+  puts "Status: #{e.status_code}"
+  
+rescue MangoApps::RateLimitError => e
+  puts "Rate limited: #{e.message}"
+  # Implement backoff strategy
+end
+```
 
 
 ## Error Handling
@@ -219,7 +316,7 @@ bundle install
 
 ### Real TDD Testing
 
-This SDK uses **real TDD** - no mocking, only actual OAuth testing with separated workflows:
+This SDK uses **real TDD** - no mocking, only actual OAuth testing with separated workflows and clean response validation:
 
 #### OAuth Flow (Get Token)
 ```bash
@@ -235,12 +332,24 @@ This SDK uses **real TDD** - no mocking, only actual OAuth testing with separate
 
 #### Manual Testing
 ```bash
-# Run all tests
+# Run all tests with clean response validation
 bundle exec rspec spec/mangoapps/ --format documentation
 
 # Run specific module tests
 bundle exec rspec spec/mangoapps/learn_spec.rb --format documentation
 bundle exec rspec spec/mangoapps/users_spec.rb --format documentation
+```
+
+#### Test Response Format
+All tests now validate the clean response format:
+```ruby
+# Tests validate MangoApps::Response objects
+expect(response).to be_a(MangoApps::Response)
+expect(response).to respond_to(:user_profile)
+
+# Clean dot notation access in tests
+user_profile = response.user_profile
+expect(user_profile).to respond_to(:minimal_profile)
 ```
 
 ### Development Workflow
@@ -288,6 +397,8 @@ The `spec/module_template.rb` provides a clean, minimal template with:
 - ✅ **Single feature test example** using helper methods
 - ✅ **Clear placeholder comments** for easy customization
 - ✅ **Helper method usage** (`test_api_endpoint`, `validate_array_response`)
+- ✅ **Clean response validation** with `MangoApps::Response` objects
+- ✅ **Dot notation testing** for intuitive API access
 
 See [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) for detailed guidelines.
 

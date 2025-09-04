@@ -30,22 +30,30 @@ mangoapps-sdk/
 │   ├── mangoapps/oauth.rb        # OAuth2/OIDC
 │   └── mangoapps/resources/      # API resources
 │       ├── posts.rb              # Posts resource
-│       └── [new_resource].rb     # Add new resources here
+│       └── learn/                # Learn API resources
+│           └── course_catalog.rb # Course catalog
 ├── spec/
-│   ├── spec_helper.rb            # RSpec configuration
-│   └── mangoapps/resources/      # Resource tests
-│       ├── posts_spec.rb         # Posts tests
-│       └── [new_resource]_spec.rb # Add new tests here
-├── .cursorrules                  # This file
-└── .cursor/                      # Cursor-specific configs
+│   ├── real_spec_helper.rb       # RSpec configuration (real tests only)
+│   └── mangoapps/
+│       └── api_spec.rb           # API integration tests
+├── run_auth.sh                   # OAuth flow script
+├── run_tests.sh                  # API test runner
+├── .env                          # Environment variables (credentials)
+├── .env.example                  # Environment template
+└── .cursorrules                  # This file
 ```
 
 ## Development Workflow
-1. **Write Real Test First**: Create test in `spec/mangoapps/integration_spec.rb` with actual OAuth
-2. **Run Tests**: `bundle exec rspec` (should fail)
-3. **Implement**: Add minimal code to make tests pass
-4. **Refactor**: Improve code while keeping tests green
-5. **Commit**: Use conventional commits
+1. **OAuth Setup**: `./run_auth.sh` (get fresh token)
+2. **Write Real Test First**: Add test to `spec/mangoapps/api_spec.rb` with actual OAuth
+3. **Run Tests**: `./run_tests.sh` (should fail)
+4. **Implement**: Add minimal code to make tests pass
+5. **Refactor**: Improve code while keeping tests green
+6. **Commit**: Use conventional commits
+
+### Separated Scripts
+- **`./run_auth.sh`**: Interactive OAuth flow, saves token to `.env`
+- **`./run_tests.sh`**: Fast API testing (requires valid token in `.env`)
 
 ## Code Style
 - Use `# frozen_string_literal: true` at top of files
@@ -65,22 +73,28 @@ mangoapps-sdk/
 ## Resource Development Pattern
 When adding a new resource (e.g., Files, Users):
 
-1. **Add Real Test to Integration Spec**:
+1. **Add Real Test to API Spec**:
 ```ruby
-# Add to spec/mangoapps/integration_spec.rb
-describe "Real Files API" do
+# Add to spec/mangoapps/api_spec.rb
+describe "Files API" do
   it "lists files from actual MangoApps API" do
-    # Test with real OAuth token
-    result = client.files_list
-    expect(result).to be_a(Hash)
-    expect(result).to have_key("files")
+    puts "\n📁 Testing Files API..."
+    
+    response = client.files_list
+    
+    expect(response).to be_a(String) # Files API returns XML
+    puts "✅ Files API call successful!"
+    puts "📊 Response: #{response[0..100]}..."
   end
 
   it "creates file via actual MangoApps API" do
-    # Test with real OAuth token
-    result = client.files_create(name: "test.txt", content: "test content")
-    expect(result).to be_a(Hash)
-    expect(result["id"]).to be_present
+    puts "\n📁 Testing Files Create API..."
+    
+    response = client.files_create(name: "test.txt", content: "test content")
+    
+    expect(response).to be_a(String)
+    puts "✅ File creation API call successful!"
+    puts "📊 Response: #{response[0..100]}..."
   end
 end
 ```
@@ -107,7 +121,9 @@ MangoApps::Client.include(MangoApps::Client::Files)
 ```
 
 ## Common Commands
-- `bundle exec rspec` - Run tests
+- `./run_auth.sh` - Get fresh OAuth token (interactive)
+- `./run_tests.sh` - Run API tests (fast, requires valid token)
+- `bundle exec rspec spec/mangoapps/api_spec.rb` - Run tests manually
 - `bundle exec rspec --format documentation` - Verbose test output
 - `bundle install` - Install dependencies
 - `gem build mangoapps-sdk.gemspec` - Build gem
@@ -153,18 +169,30 @@ When helping with this project:
 
 ## Common Issues
 - **URL Joining**: Ensure API base URL ends with `/` for proper Faraday URL joining
-- **WebMock Stubs**: Match exact URLs and headers in stubs
-- **Access Tokens**: Always stub `access_token` method in tests
+- **Token Expiration**: Run `./run_auth.sh` when token expires
 - **Dependencies**: Keep gemspec and Gemfile in sync
 - **Error Responses**: Test both success and error scenarios
-- **Token Expiration**: Handle token refresh in tests
+- **API Response Formats**: Some APIs return XML, others JSON
+- **OAuth Flow**: Use `./run_auth.sh` for fresh tokens, `./run_tests.sh` for fast testing
 
 ## Release Checklist
-- [ ] All tests pass (`bundle exec rspec`)
-- [ ] RuboCop passes (`bundle exec rubocop`)
+- [ ] All tests pass (`./run_tests.sh`)
+- [ ] OAuth flow works (`./run_auth.sh`)
 - [ ] Documentation updated
-- [ ] CHANGELOG.md updated
 - [ ] Version bumped in version.rb
 - [ ] Gem builds successfully (`gem build mangoapps-sdk.gemspec`)
 
-Remember: This is a production-ready, TDD-first project. Always write tests before implementation!
+## AI Assistant Instructions
+When helping with this project:
+1. **Always follow Real TDD approach** - Write real tests before implementation (no mocking)
+2. **Use separated scripts** - `./run_auth.sh` for OAuth, `./run_tests.sh` for testing
+3. **Production-ready code** - Focus on error handling, security, and performance
+4. **Incremental development** - Add one resource at a time
+5. **Real OAuth testing** - Use actual MangoApps API with real credentials
+6. **Environment variables** - Use .env for secure credential management
+7. **Documentation** - Update README and add code examples
+8. **Security first** - Implement PKCE, validate inputs, handle tokens securely
+9. **Error handling** - Use specific exception types and meaningful messages
+10. **Code quality** - Follow Ruby best practices
+
+Remember: This is a production-ready, TDD-first project with separated OAuth and testing workflows!

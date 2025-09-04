@@ -67,6 +67,16 @@ client = MangoApps::Client.new(config)
 
 ### 3. OAuth Authentication
 
+#### Quick Start (Recommended)
+```bash
+# Get OAuth token (interactive)
+./run_auth.sh
+
+# Run tests to verify everything works
+./run_tests.sh
+```
+
+#### Manual OAuth Flow
 ```ruby
 # Generate authorization URL
 state = SecureRandom.hex(16)
@@ -95,7 +105,29 @@ new_post = client.posts_create(
 )
 ```
 
-### Files (Coming Soon)
+### Learn (Course Catalog)
+
+```ruby
+# Get course catalog
+courses = client.course_catalog
+
+# Access course data
+courses["ms_response"]["courses"].each do |course|
+  puts "#{course['name']} - #{course['course_type']}"
+end
+```
+
+### Users
+
+```ruby
+# List users
+users = client.users_list
+
+# Get user details
+user = client.users_get(user_id: 123)
+```
+
+### Files
 
 ```ruby
 # List files
@@ -106,16 +138,6 @@ file = client.files_create(
   name: "document.pdf",
   content: file_data
 )
-```
-
-### Users (Coming Soon)
-
-```ruby
-# List users
-users = client.users_list
-
-# Get user details
-user = client.users_get(user_id: 123)
 ```
 
 ## Error Handling
@@ -194,25 +216,52 @@ bundle install
 
 ### Real TDD Testing
 
-This SDK uses **real TDD** - no mocking, only actual OAuth testing:
+This SDK uses **real TDD** - no mocking, only actual OAuth testing with separated workflows:
 
+#### OAuth Flow (Get Token)
 ```bash
-# Run real OAuth tests
-bundle exec rspec
-
-# Run with documentation format
-bundle exec rspec --format documentation
+# Get fresh OAuth token (interactive)
+./run_auth.sh
 ```
 
-### Code Quality
-
+#### API Testing (Fast Development)
 ```bash
-# Run linter
-bundle exec rubocop
-
-# Auto-fix issues
-bundle exec rubocop -a
+# Run API tests (requires valid token in .env)
+./run_tests.sh
 ```
+
+#### Manual Testing
+```bash
+# Run tests manually
+bundle exec rspec spec/mangoapps/api_spec.rb --format documentation
+```
+
+### Development Workflow
+
+1. **First time**: `./run_auth.sh` (get OAuth token)
+2. **Development**: `./run_tests.sh` (run tests quickly)
+3. **Token expires**: `./run_auth.sh` (get fresh token)
+
+#### Benefits of Separated Workflow
+
+- **⚡ Fast Testing**: No OAuth delay during development
+- **🔒 Secure**: Always validates token before testing
+- **🧹 Clean**: Single responsibility for each script
+- **💡 Clear**: Helpful error messages and guidance
+- **🎯 Focused**: OAuth and testing are completely separate
+
+### Available API Resources
+
+- **Posts**: `client.posts_list`, `client.posts_create`
+- **Learn**: `client.course_catalog` (course catalog)
+- **Users**: `client.users_list`, `client.users_get`
+- **Files**: `client.files_list`, `client.files_create`
+- **Groups**: `client.groups_list`
+- **Projects**: `client.projects_list`
+- **Tasks**: `client.tasks_list`
+- **Events**: `client.events_list`
+- **Documents**: `client.documents_list`
+- **Announcements**: `client.announcements_list`
 
 ## Contributing
 

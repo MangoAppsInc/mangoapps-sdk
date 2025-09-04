@@ -88,7 +88,7 @@ echo ""
 echo "🔗 API Tests"
 echo "============"
 print_status "Running API tests..."
-if bundle exec rspec spec/mangoapps/api_spec.rb --format documentation; then
+if bundle exec rspec spec/mangoapps/api_spec.rb spec/mangoapps/learn_spec.rb --format documentation; then
     print_success "API tests passed!"
     echo ""
     echo "🎉 All tests completed successfully!"

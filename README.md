@@ -105,8 +105,9 @@ new_post = client.posts_create(
 )
 ```
 
-### Learn (Course Catalog)
+### Learn Module
 
+#### Course Catalog
 ```ruby
 # Get course catalog
 courses = client.course_catalog
@@ -115,6 +116,15 @@ courses = client.course_catalog
 courses["ms_response"]["courses"].each do |course|
   puts "#{course['name']} - #{course['course_type']}"
 end
+```
+
+#### Course Categories
+```ruby
+# Get all course categories
+categories = client.course_categories
+
+# Get specific category details
+category = client.course_category(category_id)
 ```
 
 ### Users
@@ -252,8 +262,11 @@ bundle exec rspec spec/mangoapps/api_spec.rb --format documentation
 
 ### Available API Resources
 
-- **Posts**: `client.posts_list`, `client.posts_create`
-- **Learn**: `client.course_catalog` (course catalog)
+#### Learn Module
+- **Course Catalog**: `client.course_catalog` (with parameters)
+- **Course Categories**: `client.course_categories`, `client.course_category(id)`
+
+#### Core APIs
 - **Users**: `client.users_list`, `client.users_get`
 - **Files**: `client.files_list`, `client.files_create`
 - **Groups**: `client.groups_list`

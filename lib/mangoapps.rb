@@ -5,11 +5,9 @@ require_relative "mangoapps/errors"
 require_relative "mangoapps/config"
 require_relative "mangoapps/oauth"
 require_relative "mangoapps/client"
-require_relative "mangoapps/resources/posts"
-require_relative "mangoapps/resources/learn/course_catalog"
+require_relative "mangoapps/resources/learn"
 
 module MangoApps; end
 
 # Mix in the resources
-MangoApps::Client.include(MangoApps::Client::Posts)
-MangoApps::Client.include(MangoApps::Client::Learn::CourseCatalog)
+MangoApps::Client.include(MangoApps::Client::Learn)

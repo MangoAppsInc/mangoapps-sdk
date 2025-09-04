@@ -29,13 +29,15 @@ mangoapps-sdk/
 │   ├── mangoapps/client.rb       # HTTP client
 │   ├── mangoapps/oauth.rb        # OAuth2/OIDC
 │   └── mangoapps/resources/      # API resources
-│       ├── posts.rb              # Posts resource
-│       └── learn/                # Learn API resources
-│           └── course_catalog.rb # Course catalog
+│       └── learn.rb              # Learn module (includes all learn sub-modules)
+│           └── learn/            # Learn API resources
+│               ├── course_catalog.rb # Course catalog
+│               └── categories.rb     # Course categories
 ├── spec/
 │   ├── real_spec_helper.rb       # RSpec configuration (real tests only)
 │   └── mangoapps/
-│       └── api_spec.rb           # API integration tests
+│       ├── api_spec.rb           # Core API integration tests
+│       └── learn_spec.rb         # Learn module tests
 ├── run_auth.sh                   # OAuth flow script
 ├── run_tests.sh                  # API test runner
 ├── .env                          # Environment variables (credentials)
@@ -73,6 +75,24 @@ mangoapps-sdk/
 ## Resource Development Pattern
 When adding a new resource (e.g., Files, Users):
 
+### For Learn Module Resources
+1. **Add Real Test to Learn Spec**:
+```ruby
+# Add to spec/mangoapps/learn_spec.rb
+describe "New Learn Resource" do
+  it "tests new learn API endpoint" do
+    puts "\n📚 Testing New Learn API..."
+    
+    response = client.new_learn_endpoint
+    
+    expect(response).to be_a(Hash) # Learn APIs typically return JSON
+    puts "✅ New Learn API call successful!"
+    puts "📊 Response: #{response.class}"
+  end
+end
+```
+
+### For Core API Resources
 1. **Add Real Test to API Spec**:
 ```ruby
 # Add to spec/mangoapps/api_spec.rb
@@ -86,22 +106,25 @@ describe "Files API" do
     puts "✅ Files API call successful!"
     puts "📊 Response: #{response[0..100]}..."
   end
-
-  it "creates file via actual MangoApps API" do
-    puts "\n📁 Testing Files Create API..."
-    
-    response = client.files_create(name: "test.txt", content: "test content")
-    
-    expect(response).to be_a(String)
-    puts "✅ File creation API call successful!"
-    puts "📊 Response: #{response[0..100]}..."
-  end
 end
 ```
 
 2. **Create Resource Module**:
 ```ruby
-# lib/mangoapps/resources/files.rb
+# For Learn Module: lib/mangoapps/resources/learn/new_resource.rb
+module MangoApps
+  class Client
+    module Learn
+      module NewResource
+        def new_learn_endpoint(params = {})
+          get("v2/learn/new_endpoint.json", params: params)
+        end
+      end
+    end
+  end
+end
+
+# For Core APIs: lib/mangoapps/resources/files.rb
 module MangoApps
   class Client
     module Files
@@ -115,7 +138,17 @@ end
 
 3. **Include in Main Module**:
 ```ruby
-# lib/mangoapps.rb
+# For Learn Module: lib/mangoapps/resources/learn.rb
+require_relative "learn/new_resource"
+module MangoApps
+  class Client
+    module Learn
+      include MangoApps::Client::Learn::NewResource
+    end
+  end
+end
+
+# For Core APIs: lib/mangoapps.rb
 require "mangoapps/resources/files"
 MangoApps::Client.include(MangoApps::Client::Files)
 ```

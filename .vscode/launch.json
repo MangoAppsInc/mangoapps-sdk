@@ -1,0 +1,48 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug RSpec",
+      "type": "ruby",
+      "request": "launch",
+      "program": "${workspaceRoot}/bin/rspec",
+      "args": [
+        "${file}",
+        "--format",
+        "documentation"
+      ],
+      "env": {
+        "RUBYOPT": "-W0"
+      },
+      "showDebuggerOutput": true,
+      "stopOnEntry": false
+    },
+    {
+      "name": "Debug Current RSpec File",
+      "type": "ruby",
+      "request": "launch",
+      "program": "${workspaceRoot}/bin/rspec",
+      "args": [
+        "${file}",
+        "--format",
+        "documentation"
+      ],
+      "env": {
+        "RUBYOPT": "-W0"
+      },
+      "showDebuggerOutput": true,
+      "stopOnEntry": false
+    },
+    {
+      "name": "Debug Ruby Script",
+      "type": "ruby",
+      "request": "launch",
+      "program": "${file}",
+      "env": {
+        "RUBYOPT": "-W0"
+      },
+      "showDebuggerOutput": true,
+      "stopOnEntry": false
+    }
+  ]
+}

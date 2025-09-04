@@ -1,0 +1,169 @@
+# MangoApps SDK - Cursor AI Configuration
+# This file configures AI behavior for the MangoApps Ruby SDK project
+
+## Project Overview
+You are working on the MangoApps SDK, a Ruby gem for interacting with MangoApps APIs using OAuth2/OpenID Connect.
+
+## Core Principles
+- **TDD First**: Always write tests before implementation
+- **Incremental Development**: Add one resource at a time
+- **Clean Architecture**: Modular, testable code
+- **OAuth2/OIDC**: Proper authentication flow
+- **Faraday HTTP**: With retries and JSON handling
+
+## Technology Stack
+- **Language**: Ruby (>= 3.0)
+- **Testing**: RSpec + WebMock
+- **HTTP Client**: Faraday with retry middleware
+- **Authentication**: OAuth2 + OIDC discovery
+- **Package Manager**: Bundler + RubyGems
+
+## File Structure
+```
+mangoapps-sdk/
+├── lib/
+│   ├── mangoapps.rb              # Main module
+│   ├── mangoapps/config.rb       # Configuration
+│   ├── mangoapps/client.rb       # HTTP client
+│   ├── mangoapps/oauth.rb        # OAuth2/OIDC
+│   └── mangoapps/resources/      # API resources
+│       ├── posts.rb              # Posts resource
+│       └── [new_resource].rb     # Add new resources here
+├── spec/
+│   ├── spec_helper.rb            # RSpec configuration
+│   └── mangoapps/resources/      # Resource tests
+│       ├── posts_spec.rb         # Posts tests
+│       └── [new_resource]_spec.rb # Add new tests here
+├── .cursorrules                  # This file
+└── .cursor/                      # Cursor-specific configs
+```
+
+## Development Workflow
+1. **Write Test First**: Create spec file with WebMock stubs
+2. **Run Tests**: `bundle exec rspec` (should fail)
+3. **Implement**: Add minimal code to make tests pass
+4. **Refactor**: Improve code while keeping tests green
+5. **Commit**: Use conventional commits
+
+## Code Style
+- Use `# frozen_string_literal: true` at top of files
+- Follow Ruby style guide
+- Use meaningful variable names
+- Add comments for complex logic
+- Keep methods small and focused
+
+## Testing Guidelines
+- Always stub HTTP requests with WebMock
+- Test both success and error cases
+- Use descriptive test names
+- Mock access tokens in tests
+- Assert on both request and response
+
+## Resource Development Pattern
+When adding a new resource (e.g., Files, Users):
+
+1. **Create Test File**:
+```ruby
+# spec/mangoapps/resources/files_spec.rb
+RSpec.describe "MangoApps::Client::Files" do
+  let(:client) { MangoApps::Client.new(config) }
+
+  before do
+    allow(client).to receive(:access_token)
+      .and_return(double(token: "testtoken"))
+  end
+
+  it "lists files" do
+    stub_request(:get, "https://yourdomain.mangoapps.com/api/files")
+      .with(headers: { "Authorization" => "Bearer testtoken" })
+      .to_return(status: 200, body: { "files" => [] }.to_json)
+
+    res = client.files_list
+    expect(res).to include("files")
+  end
+end
+```
+
+2. **Create Resource Module**:
+```ruby
+# lib/mangoapps/resources/files.rb
+module MangoApps
+  class Client
+    module Files
+      def files_list(params = {})
+        get("files", params: params)
+      end
+    end
+  end
+end
+```
+
+3. **Include in Main Module**:
+```ruby
+# lib/mangoapps.rb
+require "mangoapps/resources/files"
+MangoApps::Client.include(MangoApps::Client::Files)
+```
+
+## Common Commands
+- `bundle exec rspec` - Run tests
+- `bundle exec rspec --format documentation` - Verbose test output
+- `bundle exec rubocop` - Lint code
+- `bundle install` - Install dependencies
+- `gem build mangoapps-sdk.gemspec` - Build gem
+
+## Error Handling
+- Always handle HTTP errors gracefully
+- Use proper exception classes
+- Log errors when appropriate
+- Return meaningful error messages
+
+## Security
+- Never commit API keys or secrets
+- Use environment variables for sensitive data
+- Validate all inputs
+- Follow OAuth2 security best practices
+
+## Documentation
+- Update README.md with new features
+- Add code examples for new resources
+- Document breaking changes
+- Keep CHANGELOG.md updated
+
+## AI Assistant Instructions
+When helping with this project:
+1. **Always follow TDD approach** - Write tests before implementation
+2. **Production-ready code** - Focus on error handling, security, and performance
+3. **Incremental development** - Add one resource at a time
+4. **Comprehensive testing** - Cover success, error, and edge cases
+5. **Documentation** - Update README and add code examples
+6. **Security first** - Implement PKCE, validate inputs, handle tokens securely
+7. **Error handling** - Use specific exception types and meaningful messages
+8. **Code quality** - Follow Ruby best practices and RuboCop guidelines
+
+## Production Guidelines
+- **OAuth Security**: Always use PKCE for public clients
+- **Token Management**: Implement secure token storage and refresh
+- **Error Handling**: Provide specific exception types for different scenarios
+- **Rate Limiting**: Handle 429 responses gracefully
+- **Input Validation**: Validate all inputs and sanitize data
+- **Logging**: Use structured logging for debugging
+- **Testing**: Maintain high test coverage with realistic scenarios
+
+## Common Issues
+- **URL Joining**: Ensure API base URL ends with `/` for proper Faraday URL joining
+- **WebMock Stubs**: Match exact URLs and headers in stubs
+- **Access Tokens**: Always stub `access_token` method in tests
+- **Dependencies**: Keep gemspec and Gemfile in sync
+- **Error Responses**: Test both success and error scenarios
+- **Token Expiration**: Handle token refresh in tests
+
+## Release Checklist
+- [ ] All tests pass (`bundle exec rspec`)
+- [ ] RuboCop passes (`bundle exec rubocop`)
+- [ ] Documentation updated
+- [ ] CHANGELOG.md updated
+- [ ] Version bumped in version.rb
+- [ ] Gem builds successfully (`gem build mangoapps-sdk.gemspec`)
+
+Remember: This is a production-ready, TDD-first project. Always write tests before implementation!

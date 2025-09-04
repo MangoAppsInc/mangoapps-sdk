@@ -1,0 +1,52 @@
+# RuboCop configuration for MangoApps SDK
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.0
+  Exclude:
+    - 'vendor/**/*'
+    - 'spec/**/*'
+    - 'bin/**/*'
+    - 'Gemfile'
+    - 'Rakefile'
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  Max: 35
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/AbcSize:
+  Max: 25
+
+Metrics/ClassLength:
+  Max: 120
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false

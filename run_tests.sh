@@ -10,8 +10,7 @@ echo "=========================="
 echo ""
 echo "📋 This test suite will:"
 echo "   1. 🔐 Start with OAuth flow (get fresh token)"
-echo "   2. 🌐 Test all available API endpoints"
-echo "   3. 🔗 Run integration tests"
+echo "   2. 🔗 Run integration tests (OAuth + API + Configuration)"
 echo ""
 echo "⚠️  IMPORTANT: Every run starts with OAuth to ensure fresh tokens!"
 echo ""
@@ -201,21 +200,8 @@ fi
 
 echo ""
 
-# Test 2: API Calls
-echo "🌐 Test 2: API Calls"
-echo "==================="
-print_status "Running API tests..."
-if bundle exec rspec spec/mangoapps/api_spec.rb --format documentation; then
-    print_success "API tests passed!"
-else
-    print_error "API tests failed!"
-    exit 1
-fi
-
-echo ""
-
-# Test 3: Integration Tests
-echo "🔗 Test 3: Integration Tests"
+# Test 2: Integration Tests
+echo "🔗 Test 2: Integration Tests"
 echo "==========================="
 print_status "Running integration tests..."
 if bundle exec rspec spec/mangoapps/integration_spec.rb --format documentation; then
@@ -232,8 +218,7 @@ print_success "MangoApps SDK is working correctly!"
 echo ""
 print_status "Test Summary:"
 echo "  🔐 OAuth flow: ✅ Fresh token obtained and working"
-echo "  🌐 API calls: ✅ All endpoints tested and accessible" 
-echo "  🔗 Integration: ✅ Full SDK functionality verified"
+echo "  🔗 Integration: ✅ Full SDK functionality verified (OAuth + API + Configuration)"
 echo ""
 print_status "You can now start developing with confidence!"
 echo "  - Fresh OAuth token is saved in .env"

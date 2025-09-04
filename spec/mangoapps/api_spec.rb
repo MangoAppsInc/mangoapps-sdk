@@ -24,18 +24,6 @@ RSpec.describe "MangoApps API Calls" do
       puts "📊 Response: #{response}"
     end
 
-    it "lists users from /api/users" do
-      puts "\n👥 Testing /api/users endpoint..."
-      
-      response = client.get("users")
-      
-      expect(response).to be_a(String) # MangoApps returns XML
-      expect(response).to include("<ms_response>")
-      expect(response).to include("<users")
-      puts "✅ /api/users call successful!"
-      puts "📊 Response contains XML with users structure"
-    end
-
     it "handles API errors gracefully" do
       puts "\n🧪 Testing error handling..."
       
@@ -47,78 +35,6 @@ RSpec.describe "MangoApps API Calls" do
       rescue MangoApps::APIError => e
         puts "✅ API error handling works: #{e.message}"
       end
-    end
-  end
-
-  describe "Posts API" do
-    it "lists posts from actual MangoApps API" do
-      puts "\n📝 Testing /api/posts endpoint..."
-      
-      response = client.get("posts")
-      
-      expect(response).to be_a(String) # MangoApps returns XML
-      expect(response).to include("<ms_response>")
-      expect(response).to include("<posts")
-      puts "✅ /api/posts call successful!"
-      puts "📊 Response contains XML with posts structure"
-    end
-
-    it "tests posts resource method" do
-      puts "\n📝 Testing posts resource method..."
-      
-      response = client.posts_list
-      
-      expect(response).to be_a(String)
-      expect(response).to include("ms_response")
-      puts "✅ Posts resource method works"
-    end
-  end
-
-  describe "Additional API Endpoints" do
-    it "tests common MangoApps API endpoints" do
-      puts "\n🔍 Testing additional API endpoints..."
-      
-      # Test various common endpoints
-      endpoints_to_test = [
-        "files",
-        "groups", 
-        "projects",
-        "tasks",
-        "events",
-        "documents",
-        "announcements"
-      ]
-      
-      endpoints_to_test.each do |endpoint|
-        begin
-          puts "  Testing /api/#{endpoint}..."
-          response = client.get(endpoint)
-          
-          if response.is_a?(String) && response.include?("<ms_response>")
-            puts "    ✅ /api/#{endpoint} - accessible"
-          else
-            puts "    ⚠️  /api/#{endpoint} - unexpected response format"
-          end
-        rescue MangoApps::APIError => e
-          puts "    ❌ /api/#{endpoint} - error: #{e.message}"
-        rescue => e
-          puts "    ❌ /api/#{endpoint} - unexpected error: #{e.message}"
-        end
-      end
-      
-      puts "✅ Additional endpoint testing completed"
-    end
-  end
-
-  describe "API Configuration" do
-    it "uses correct API base URL" do
-      expect(config.api_base).to eq("https://siddus.mangoapps.com/api/")
-    end
-
-    it "constructs proper API endpoints" do
-      # Test URL joining
-      full_url = URI.join(config.api_base, "me").to_s
-      expect(full_url).to eq("https://siddus.mangoapps.com/api/me")
     end
   end
 end

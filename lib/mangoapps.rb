@@ -5,7 +5,7 @@ require_relative "mangoapps/errors"
 require_relative "mangoapps/config"
 require_relative "mangoapps/oauth"
 require_relative "mangoapps/client"
-require_relative "mangoapps/resources/learn"
+require_relative "mangoapps/modules/learn"
 
 module MangoApps; end
 

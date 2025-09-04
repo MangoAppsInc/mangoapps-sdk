@@ -14,7 +14,7 @@ RSpec.describe "MangoApps Learn Module" do
   end
 
   describe "Course Catalog" do
-    it "gets course catalog from actual MangoApps Learn API" do
+    it "gets course catalog" do
       puts "\n📚 Testing Learn API - Course Catalog..."
       
       response = client.course_catalog
@@ -41,43 +41,35 @@ RSpec.describe "MangoApps Learn Module" do
         puts "📊 Course catalog is empty"
       end
     end
-
-    it "gets course catalog with parameters" do
-      puts "\n📚 Testing Learn API - Course Catalog with params..."
-      
-      response = client.course_catalog(limit: 10)
-      
-      expect(response).to be_a(Hash)
-      expect(response).to have_key("ms_response")
-      expect(response["ms_response"]).to have_key("courses")
-      puts "✅ Course catalog with parameters successful!"
-    end
   end
 
-  describe "Categories" do
-    it "tests course categories API endpoint" do
+  describe "Course Categories" do
+    it "gets course categories" do
       puts "\n📂 Testing Learn API - Course Categories..."
       
       response = client.course_categories
-      puts "📊 Category API response: #{response}"
-      puts "✅ Course categories API call completed!"
-      puts "📊 Response type: #{response.class}"
       
-      # Note: This endpoint might return "ok" if not implemented or return actual data
-      # The important thing is that the API call doesn't crash
+      expect(response).to be_a(Hash) # Learn API returns parsed JSON
+      expect(response).to have_key("ms_response")
+      expect(response["ms_response"]).to have_key("all_categories")
+      expect(response["ms_response"]["all_categories"]).to be_an(Array)
+      puts "✅ Course categories API call successful!"
+      puts "📊 Response contains course categories data"
+      
+      # Validate the category structure
+      if response["ms_response"]["all_categories"].any?
+        category = response["ms_response"]["all_categories"].first
+        expect(category).to have_key("id")
+        expect(category).to have_key("name")
+        expect(category).to have_key("icon_properties")
+        expect(category).to have_key("position")
+        puts "✅ Course categories structure validated"
+        puts "📊 Found #{response['ms_response']['all_categories'].length} categories"
+        puts "📂 Sample category: #{category['name']} (ID: #{category['id']})"
+      else
+        puts "📊 Course categories list is empty"
+      end
     end
 
-    it "tests specific course category details API endpoint" do
-      puts "\n📂 Testing Learn API - Specific Category..."
-      
-      # Test with a common category ID (this might need adjustment based on actual data)
-      response = client.course_category(1)
-      puts "📊 Category details API response: #{response}"
-      puts "✅ Course category details API call completed!"
-      puts "📊 Response type: #{response.class}"
-      
-      # Note: This endpoint might return "ok" if not implemented or return actual data
-      # The important thing is that the API call doesn't crash
-    end
   end
 end

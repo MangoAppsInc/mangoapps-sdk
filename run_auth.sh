@@ -133,10 +133,16 @@ require 'json'
 Dotenv.load
 
 config = MangoApps::Config.new
-authorization_code = '$AUTH_CODE'
+authorization_code = ARGV[0]
 
 # Manual token exchange
-uri = URI('https://siddus.mangoapps.com/oauth2/token')
+if config.base_url.nil?
+  puts 'ERROR: config.base_url is nil. Domain: ' + config.domain.to_s
+  exit 1
+end
+
+token_url = config.base_url + '/oauth2/token'
+uri = URI(token_url)
 http = Net::HTTP.new(uri.host, uri.port)
 http.use_ssl = true
 
@@ -162,9 +168,9 @@ if response.code == '200'
   expires_in = token_data['expires_in']
   
   puts '✅ Token exchange successful!'
-  puts \"🔑 Access Token: #{access_token[0..20]}...\"
-  puts \"🔄 Refresh Token: #{refresh_token[0..20]}...\"
-  puts \"⏰ Expires in: #{expires_in} seconds (#{expires_in / 3600} hours)\"
+  puts '🔑 Access Token: ' + access_token[0..20] + '...'
+  puts '🔄 Refresh Token: ' + refresh_token[0..20] + '...'
+  puts '⏰ Expires in: ' + expires_in.to_s + ' seconds (' + (expires_in / 3600).to_s + ' hours)'
   
   # Update .env file
   env_content = File.read('.env')
@@ -179,20 +185,20 @@ if response.code == '200'
   # Add new token lines
   expires_at = Time.now.to_i + expires_in
   env_content += \"\n# OAuth Tokens (auto-generated)\n\"
-  env_content += \"MANGOAPPS_ACCESS_TOKEN=#{access_token}\n\"
-  env_content += \"MANGOAPPS_REFRESH_TOKEN=#{refresh_token}\n\"
-  env_content += \"MANGOAPPS_TOKEN_EXPIRES_AT=#{expires_at}\n\"
+  env_content += 'MANGOAPPS_ACCESS_TOKEN=' + access_token + \"\n\"
+  env_content += 'MANGOAPPS_REFRESH_TOKEN=' + refresh_token + \"\n\"
+  env_content += 'MANGOAPPS_TOKEN_EXPIRES_AT=' + expires_at.to_s + \"\n\"
   
   File.write('.env', env_content)
   
   puts '✅ Tokens saved to .env file'
 else
   puts '❌ Token exchange failed:'
-  puts \"   Status: #{response.code}\"
-  puts \"   Response: #{response.body}\"
+  puts '   Status: ' + response.code
+  puts '   Response: ' + response.body
   exit 1
 end
-"
+" "$AUTH_CODE"
 
 if [ $? -eq 0 ]; then
     print_success "OAuth flow completed successfully!"

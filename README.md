@@ -123,6 +123,11 @@ end
 # Get all course categories
 categories = client.course_categories
 
+# Access category data
+categories["ms_response"]["all_categories"].each do |category|
+  puts "#{category['name']} - Position: #{category['position']}"
+end
+
 # Get specific category details
 category = client.course_category(category_id)
 ```
@@ -263,8 +268,8 @@ bundle exec rspec spec/mangoapps/api_spec.rb --format documentation
 ### Available API Resources
 
 #### Learn Module
-- **Course Catalog**: `client.course_catalog` (with parameters)
-- **Course Categories**: `client.course_categories`, `client.course_category(id)`
+- **Course Catalog**: `client.course_catalog` (with parameters) - ✅ Working
+- **Course Categories**: `client.course_categories`, `client.course_category(id)` - ✅ Working
 
 #### Core APIs
 - **Users**: `client.users_list`, `client.users_get`

@@ -9,10 +9,11 @@ echo "🧪 MangoApps SDK Test Suite"
 echo "=========================="
 echo ""
 echo "📋 This test suite will:"
-echo "   1. 🔐 Start with OAuth flow (get fresh token)"
-echo "   2. 🔗 Run integration tests (OAuth + API + Configuration)"
+echo "   1. 🔗 Run API tests"
 echo ""
-echo "⚠️  IMPORTANT: Every run starts with OAuth to ensure fresh tokens!"
+echo "💡 Usage:"
+echo "   ./run_tests.sh  - Run API tests (requires valid token in .env)"
+echo "   ./run_auth.sh   - Get fresh OAuth token first"
 echo ""
 
 # Colors for output
@@ -39,6 +40,29 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Check if we have a valid token
+print_status "Checking for valid OAuth token..."
+TOKEN_STATUS=$(ruby -e "
+require './lib/mangoapps'
+require 'dotenv'
+Dotenv.load
+
+config = MangoApps::Config.new
+if config.has_valid_token?
+  puts 'valid'
+else
+  puts 'invalid'
+end
+")
+
+if [ "$TOKEN_STATUS" = "invalid" ]; then
+    print_error "No valid OAuth token found in .env"
+    print_status "Please run ./run_auth.sh first to get a fresh token"
+    exit 1
+fi
+
+print_success "Valid OAuth token found - proceeding with tests"
+
 # Check if .env file exists
 if [ ! -f ".env" ]; then
     print_error ".env file not found!"
@@ -57,170 +81,27 @@ print_status "Installing dependencies..."
 bundle install
 
 echo ""
-print_status "Starting test suite..."
+print_status "Starting API tests..."
 echo ""
 
-# Test 1: OAuth Flow (ALWAYS START HERE)
-echo "🔐 Test 1: OAuth Flow"
-echo "===================="
-print_status "Starting fresh OAuth flow..."
-
-# Clear any existing tokens to ensure fresh start
-print_status "Clearing any existing tokens..."
-ruby -e "
-require 'dotenv'
-Dotenv.load
-
-if File.exist?('.env')
-  env_content = File.read('.env')
-  
-  # Remove existing token lines
-  env_content = env_content.lines.reject { |line| 
-    line.start_with?('MANGOAPPS_ACCESS_TOKEN=') || 
-    line.start_with?('MANGOAPPS_REFRESH_TOKEN=') ||
-    line.start_with?('MANGOAPPS_TOKEN_EXPIRES_AT=')
-  }.join
-  
-  File.write('.env', env_content)
-  puts '✅ Cleared existing tokens'
-end
-"
-
-# Generate fresh authorization URL
-print_status "Generating fresh authorization URL..."
-AUTH_URL=$(ruby -e "
-require './lib/mangoapps'
-require 'dotenv'
-Dotenv.load
-
-config = MangoApps::Config.new
-client = MangoApps::Client.new(config)
-state = SecureRandom.hex(16)
-auth_url = client.authorization_url(state: state)
-puts auth_url
-")
-
-echo ""
-echo "🌐 Step 1: Get Authorization Code"
-echo "Open this URL in your browser:"
-echo "$AUTH_URL"
-echo ""
-echo "After authorizing, copy the 'code' parameter from the redirect URL"
-echo "Example: https://localhost:3000/oauth/callback?code=YOUR_CODE&state=..."
-echo ""
-
-# Wait for user to enter authorization code
-print_status "Waiting for authorization code..."
-read -p "📝 Enter your authorization code: " AUTH_CODE
-
-if [ -z "$AUTH_CODE" ]; then
-    print_error "No authorization code provided. Exiting."
+# API Tests
+echo "🔗 API Tests"
+echo "============"
+print_status "Running API tests..."
+if bundle exec rspec spec/mangoapps/api_spec.rb --format documentation; then
+    print_success "API tests passed!"
+    echo ""
+    echo "🎉 All tests completed successfully!"
+    echo "=================================="
+    print_success "MangoApps SDK is working correctly!"
+    echo ""
+    print_status "Test Summary:"
+    echo "  🔗 API tests: ✅ All endpoints tested and working"
+    echo ""
+    print_status "You can now start developing with confidence!"
+    echo "  - All API endpoints are tested and working"
+    echo "  - SDK is ready for production use"
+else
+    print_error "API tests failed!"
     exit 1
 fi
-
-print_status "Exchanging authorization code for access token..."
-
-# Exchange code for token and save to .env
-ruby -e "
-require './lib/mangoapps'
-require 'dotenv'
-require 'net/http'
-require 'uri'
-require 'json'
-Dotenv.load
-
-config = MangoApps::Config.new
-authorization_code = '$AUTH_CODE'
-
-# Manual token exchange
-uri = URI('https://siddus.mangoapps.com/oauth2/token')
-http = Net::HTTP.new(uri.host, uri.port)
-http.use_ssl = true
-
-body = {
-  grant_type: 'authorization_code',
-  code: authorization_code,
-  redirect_uri: config.redirect_uri,
-  client_id: config.client_id,
-  client_secret: config.client_secret
-}
-
-request = Net::HTTP::Post.new(uri)
-request['Content-Type'] = 'application/x-www-form-urlencoded'
-request['Accept'] = 'application/json'
-request.body = URI.encode_www_form(body)
-
-response = http.request(request)
-
-if response.code == '200'
-  token_data = JSON.parse(response.body)
-  access_token = token_data['access_token']
-  refresh_token = token_data['refresh_token']
-  expires_in = token_data['expires_in']
-  
-  puts '✅ Token exchange successful!'
-  puts \"🔑 Access Token: #{access_token[0..20]}...\"
-  puts \"🔄 Refresh Token: #{refresh_token[0..20]}...\"
-  puts \"⏰ Expires in: #{expires_in} seconds (#{expires_in / 3600} hours)\"
-  
-  # Update .env file
-  env_content = File.read('.env')
-  
-  # Remove existing token lines
-  env_content = env_content.lines.reject { |line| 
-    line.start_with?('MANGOAPPS_ACCESS_TOKEN=') || 
-    line.start_with?('MANGOAPPS_REFRESH_TOKEN=') ||
-    line.start_with?('MANGOAPPS_TOKEN_EXPIRES_AT=')
-  }.join
-  
-  # Add new token lines
-  expires_at = Time.now.to_i + expires_in
-  env_content += \"\n# OAuth Tokens (auto-generated)\n\"
-  env_content += \"MANGOAPPS_ACCESS_TOKEN=#{access_token}\n\"
-  env_content += \"MANGOAPPS_REFRESH_TOKEN=#{refresh_token}\n\"
-  env_content += \"MANGOAPPS_TOKEN_EXPIRES_AT=#{expires_at}\n\"
-  
-  File.write('.env', env_content)
-  
-  puts '✅ Tokens saved to .env file'
-else
-  puts '❌ Token exchange failed:'
-  puts \"   Status: #{response.code}\"
-  puts \"   Response: #{response.body}\"
-  exit 1
-end
-"
-
-if [ $? -eq 0 ]; then
-    print_success "OAuth flow completed successfully!"
-else
-    print_error "OAuth flow failed!"
-    exit 1
-fi
-
-echo ""
-
-# Test 2: Integration Tests
-echo "🔗 Test 2: Integration Tests"
-echo "==========================="
-print_status "Running integration tests..."
-if bundle exec rspec spec/mangoapps/integration_spec.rb --format documentation; then
-    print_success "Integration tests passed!"
-else
-    print_error "Integration tests failed!"
-    exit 1
-fi
-
-echo ""
-echo "🎉 All tests completed successfully!"
-echo "=================================="
-print_success "MangoApps SDK is working correctly!"
-echo ""
-print_status "Test Summary:"
-echo "  🔐 OAuth flow: ✅ Fresh token obtained and working"
-echo "  🔗 Integration: ✅ Full SDK functionality verified (OAuth + API + Configuration)"
-echo ""
-print_status "You can now start developing with confidence!"
-echo "  - Fresh OAuth token is saved in .env"
-echo "  - All API endpoints are tested and working"
-echo "  - SDK is ready for production use"

@@ -3,6 +3,7 @@
 require "faraday"
 require "faraday/retry"
 require "multi_json"
+require "ostruct"
 
 module MangoApps
   class Client
@@ -115,6 +116,18 @@ module MangoApps
     end
 
     def load_access_token
+      # First try to use stored token from .env
+      if config.has_valid_token?
+        # Create a simple token object from stored token
+        stored_token = OpenStruct.new(
+          token: config.access_token,
+          refresh_token: config.refresh_token,
+          expires_at: ENV["MANGOAPPS_TOKEN_EXPIRES_AT"]&.to_i
+        )
+        return stored_token
+      end
+      
+      # Fallback to oauth token store
       oauth.load_token
     end
 
@@ -122,7 +135,12 @@ module MangoApps
       return true unless access_token
 
       # Check if token expires within the next 5 minutes
-      access_token.expires_at && access_token.expires_at < (Time.now + 300)
+      if access_token.expires_at
+        expires_at = access_token.expires_at.is_a?(Integer) ? Time.at(access_token.expires_at) : access_token.expires_at
+        expires_at < (Time.now + 300)
+      else
+        false
+      end
     end
 
     def handle_error_response(response)

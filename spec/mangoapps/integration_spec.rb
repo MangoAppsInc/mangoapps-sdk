@@ -136,7 +136,7 @@ RSpec.describe "MangoApps SDK Real OAuth Tests" do
       puts "   #{auth_url}"
       puts "2. Authorize the application"
       puts "3. Copy the 'code' parameter from the redirect URL"
-      puts "4. Run: ruby test/test_real_oauth.rb <authorization_code>"
+      puts "4. Test with: client.authenticate!(authorization_code: 'YOUR_CODE')"
     end
 
     it "validates OAuth client configuration for token exchange" do

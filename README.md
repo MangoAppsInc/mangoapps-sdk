@@ -38,10 +38,10 @@ gem install mangoapps-sdk
 
 ### 1. Environment Setup
 
-Create a `.env` file with your MangoApps credentials:
+For testing purposes, create a `.env` file with your MangoApps credentials:
 
 ```bash
-# .env
+# .env (for testing only)
 MANGOAPPS_DOMAIN=yourdomain.mangoapps.com
 MANGOAPPS_CLIENT_ID=your_client_id_here
 MANGOAPPS_CLIENT_SECRET=your_client_secret_here
@@ -49,18 +49,23 @@ MANGOAPPS_REDIRECT_URI=https://localhost:3000/oauth/callback
 MANGOAPPS_SCOPE=openid profile email
 ```
 
+**Note**: The `.env` file is only used for testing. In production, you should handle token storage and management according to your application's security requirements.
+
 ### 2. Configuration
 
 ```ruby
 require "mangoapps"
 
-# Automatically loads from .env file
+# For testing - automatically loads from .env file
 config = MangoApps::Config.new
 
-# Or override specific values
+# For production - provide credentials directly
 config = MangoApps::Config.new(
-  domain: "custom.mangoapps.com"
-  # Other values loaded from .env
+  domain: "yourdomain.mangoapps.com",
+  client_id: "your_client_id",
+  client_secret: "your_client_secret",
+  redirect_uri: "https://localhost:3000/oauth/callback",
+  scope: "openid profile email"
 )
 
 client = MangoApps::Client.new(config)
@@ -85,7 +90,11 @@ auth_url = client.authorization_url(state: state)
 puts "Open this URL to authorize: #{auth_url}"
 
 # After user authorizes, exchange code for tokens
-client.authenticate!(authorization_code: params[:code])
+tokens = client.authenticate!(authorization_code: params[:code])
+
+# Store tokens securely in your application
+# (implementation depends on your storage solution)
+store_tokens(tokens.access_token, tokens.refresh_token)
 
 # Now you can make API calls with clean dot notation
 user = client.me
@@ -284,23 +293,6 @@ config = MangoApps::Config.new(
 )
 ```
 
-## Token Storage
-
-The SDK automatically handles token storage and refresh:
-
-```ruby
-# Check if authenticated
-if client.authenticated?
-  # Make API calls
-  posts = client.posts_list
-else
-  # Redirect to authorization
-  auth_url = client.authorization_url
-end
-
-# Manual token refresh
-client.refresh_token! if client.access_token.expired?
-```
 
 ## Development
 
@@ -310,7 +302,7 @@ client.refresh_token! if client.access_token.expired?
 git clone https://github.com/MangoAppsInc/mangoapps-sdk.git
 cd mangoapps-sdk
 cp .env.example .env
-# Edit .env with your MangoApps credentials
+# Edit .env with your MangoApps credentials (for testing only)
 bundle install
 ```
 

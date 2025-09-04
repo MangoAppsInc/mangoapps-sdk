@@ -19,12 +19,13 @@ module MangoApps
 
   # API related errors
   class APIError < Error
-    attr_reader :status_code, :response_body
+    attr_reader :status_code, :response_body, :request_details
 
-    def initialize(message, status_code: nil, response_body: nil)
+    def initialize(message, status_code: nil, response_body: nil, request_details: nil)
       super(message)
       @status_code = status_code
       @response_body = response_body
+      @request_details = request_details
     end
   end
 

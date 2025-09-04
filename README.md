@@ -92,17 +92,16 @@ posts = client.posts_list
 
 ## API Resources
 
-### Posts
+### Users Module
 
 ```ruby
-# List posts
-posts = client.posts_list(limit: 10)
+# Get current user profile
+user = client.me
 
-# Create a post
-new_post = client.posts_create(
-  title: "Hello World",
-  content: "This is my first post"
-)
+# Access user data
+puts "User: #{user['ms_response']['user']['name']}"
+puts "Email: #{user['ms_response']['user']['email']}"
+puts "Points: #{user['ms_response']['user']['total_points']}"
 ```
 
 ### Learn Module
@@ -132,28 +131,17 @@ end
 category = client.course_category(category_id)
 ```
 
-### Users
+## Available Modules
 
-```ruby
-# List users
-users = client.users_list
+### ✅ Currently Implemented
 
-# Get user details
-user = client.users_get(user_id: 123)
-```
+#### Users Module
+- **User Profile**: `client.me` - Get current user information
 
-### Files
+#### Learn Module  
+- **Course Catalog**: `client.course_catalog` - Get available courses
+- **Course Categories**: `client.course_categories` - Get course categories
 
-```ruby
-# List files
-files = client.files_list
-
-# Upload a file
-file = client.files_create(
-  name: "document.pdf",
-  content: file_data
-)
-```
 
 ## Error Handling
 
@@ -247,8 +235,12 @@ This SDK uses **real TDD** - no mocking, only actual OAuth testing with separate
 
 #### Manual Testing
 ```bash
-# Run tests manually
-bundle exec rspec spec/mangoapps/api_spec.rb --format documentation
+# Run all tests
+bundle exec rspec spec/mangoapps/ --format documentation
+
+# Run specific module tests
+bundle exec rspec spec/mangoapps/learn_spec.rb --format documentation
+bundle exec rspec spec/mangoapps/users_spec.rb --format documentation
 ```
 
 ### Development Workflow
@@ -265,21 +257,35 @@ bundle exec rspec spec/mangoapps/api_spec.rb --format documentation
 - **💡 Clear**: Helpful error messages and guidance
 - **🎯 Focused**: OAuth and testing are completely separate
 
-### Available API Resources
+### Adding New Modules
 
-#### Learn Module
-- **Course Catalog**: `client.course_catalog` (with parameters) - ✅ Working
-- **Course Categories**: `client.course_categories`, `client.course_category(id)` - ✅ Working
+The SDK uses a modular architecture that makes adding new APIs simple:
 
-#### Core APIs
-- **Users**: `client.users_list`, `client.users_get`
-- **Files**: `client.files_list`, `client.files_create`
-- **Groups**: `client.groups_list`
-- **Projects**: `client.projects_list`
-- **Tasks**: `client.tasks_list`
-- **Events**: `client.events_list`
-- **Documents**: `client.documents_list`
-- **Announcements**: `client.announcements_list`
+#### Using the Module Generator (Recommended)
+```bash
+# Generate a new module with tests
+ruby generate_module.rb Files
+
+# This creates:
+# - lib/mangoapps/modules/files.rb
+# - spec/mangoapps/files_spec.rb
+# - Updates lib/mangoapps.rb and run_tests.sh
+```
+
+#### Manual Module Creation
+1. Create module file: `lib/mangoapps/modules/your_module.rb`
+2. Create test file: `spec/mangoapps/your_module_spec.rb`
+3. Update `lib/mangoapps.rb` to include the module
+4. Update `run_tests.sh` to run the new tests
+
+See [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) for detailed guidelines.
+
+### Current Test Coverage
+
+- ✅ **Learn Module**: Course catalog and categories
+- ✅ **Users Module**: User profile and authentication
+- ✅ **Error Handling**: Comprehensive error logging and testing
+- ✅ **OAuth Flow**: Token management and refresh
 
 ## Contributing
 

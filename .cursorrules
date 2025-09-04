@@ -28,18 +28,24 @@ mangoapps-sdk/
 │   ├── mangoapps/config.rb       # Configuration
 │   ├── mangoapps/client.rb       # HTTP client
 │   ├── mangoapps/oauth.rb        # OAuth2/OIDC
-│   └── mangoapps/resources/      # API resources
-│       └── learn.rb              # Learn module (includes all learn sub-modules)
-│           └── learn/            # Learn API resources
-│               ├── course_catalog.rb # Course catalog
-│               └── categories.rb     # Course categories
+│   ├── mangoapps/errors.rb       # Error classes
+│   ├── mangoapps/version.rb      # Version info
+│   └── mangoapps/modules/        # API modules
+│       ├── learn.rb              # Learn module
+│       ├── users.rb              # Users module
+│       └── learn/                # Learn sub-modules
+│           ├── course_catalog.rb # Course catalog
+│           └── course_categories.rb # Course categories
 ├── spec/
 │   ├── real_spec_helper.rb       # RSpec configuration (real tests only)
+│   ├── shared_test_helpers.rb    # Reusable test helpers
 │   └── mangoapps/
-│       ├── api_spec.rb           # Core API integration tests
-│       └── learn_spec.rb         # Learn module tests
+│       ├── learn_spec.rb         # Learn module tests
+│       └── users_spec.rb         # Users module tests
 ├── run_auth.sh                   # OAuth flow script
 ├── run_tests.sh                  # API test runner
+├── generate_module.rb            # Module generator script
+├── MODULE_DEVELOPMENT.md         # Development guidelines
 ├── .env                          # Environment variables (credentials)
 ├── .env.example                  # Environment template
 └── .cursorrules                  # This file
@@ -47,7 +53,6 @@ mangoapps-sdk/
 
 ## Development Workflow
 1. **OAuth Setup**: `./run_auth.sh` (get fresh token)
-2. **Write Real Test First**: Add test to `spec/mangoapps/api_spec.rb` with actual OAuth
 3. **Run Tests**: `./run_tests.sh` (should fail)
 4. **Implement**: Add minimal code to make tests pass
 5. **Refactor**: Improve code while keeping tests green
@@ -66,11 +71,12 @@ mangoapps-sdk/
 
 ## Testing Guidelines
 - **Real OAuth Testing Only**: No mocking, use actual MangoApps API
-- Test both success and error cases with real credentials
+- **Positive Test Cases Only**: Focus on successful API calls, no error handling tests
 - Use descriptive test names
 - Use environment variables for OAuth credentials
 - Test against actual MangoApps domain
 - Assert on real API responses
+- Keep tests simple and focused on functionality
 
 ## Resource Development Pattern
 When adding a new resource (e.g., Files, Users):
@@ -86,32 +92,32 @@ describe "New Learn Resource" do
     response = client.new_learn_endpoint
     
     expect(response).to be_a(Hash) # Learn APIs typically return JSON
+    expect(response).to have_key("ms_response")
     puts "✅ New Learn API call successful!"
-    puts "📊 Response: #{response.class}"
+    puts "📊 Response contains expected data structure"
   end
 end
 ```
 
 ### For Core API Resources
-1. **Add Real Test to API Spec**:
+1. **Add Real Test to Module Spec**:
 ```ruby
-# Add to spec/mangoapps/api_spec.rb
-describe "Files API" do
-  it "lists files from actual MangoApps API" do
-    puts "\n📁 Testing Files API..."
+describe "Your API" do
+  it "lists items from actual MangoApps API" do
+    puts "\n🔍 Testing Your API..."
     
-    response = client.files_list
+    response = client.your_endpoint
     
-    expect(response).to be_a(String) # Files API returns XML
-    puts "✅ Files API call successful!"
-    puts "📊 Response: #{response[0..100]}..."
+    expect(response).to be_a(Hash) # Most APIs return JSON
+    puts "✅ Your API call successful!"
+    puts "📊 Response contains expected data"
   end
 end
 ```
 
 2. **Create Resource Module**:
 ```ruby
-# For Learn Module: lib/mangoapps/resources/learn/new_resource.rb
+# For Learn Module: lib/mangoapps/modules/learn/new_resource.rb
 module MangoApps
   class Client
     module Learn
@@ -124,12 +130,12 @@ module MangoApps
   end
 end
 
-# For Core APIs: lib/mangoapps/resources/files.rb
+# For Core APIs: lib/mangoapps/modules/your_module.rb
 module MangoApps
   class Client
-    module Files
-      def files_list(params = {})
-        get("files", params: params)
+    module YourModule
+      def your_endpoint(params = {})
+        get("v2/your_endpoint.json", params: params)
       end
     end
   end
@@ -138,7 +144,7 @@ end
 
 3. **Include in Main Module**:
 ```ruby
-# For Learn Module: lib/mangoapps/resources/learn.rb
+# For Learn Module: lib/mangoapps/modules/learn.rb
 require_relative "learn/new_resource"
 module MangoApps
   class Client
@@ -149,14 +155,16 @@ module MangoApps
 end
 
 # For Core APIs: lib/mangoapps.rb
-require "mangoapps/resources/files"
-MangoApps::Client.include(MangoApps::Client::Files)
+require_relative "mangoapps/modules/your_module"
+MangoApps::Client.include(MangoApps::Client::YourModule)
 ```
 
 ## Common Commands
 - `./run_auth.sh` - Get fresh OAuth token (interactive)
 - `./run_tests.sh` - Run API tests (fast, requires valid token)
-- `bundle exec rspec spec/mangoapps/api_spec.rb` - Run tests manually
+- `ruby generate_module.rb ModuleName` - Generate new module with tests
+- `bundle exec rspec spec/mangoapps/` - Run all tests
+- `bundle exec rspec spec/mangoapps/learn_spec.rb` - Run specific module tests
 - `bundle exec rspec --format documentation` - Verbose test output
 - `bundle install` - Install dependencies
 - `gem build mangoapps-sdk.gemspec` - Build gem

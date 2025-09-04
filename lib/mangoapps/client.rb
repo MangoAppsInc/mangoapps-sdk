@@ -91,6 +91,15 @@ module MangoApps
     def request(method, path, params: nil, body: nil, headers: {})
       ensure_authenticated!
 
+      # Store request details for error reporting
+      request_details = {
+        method: method.to_s.upcase,
+        url: "#{config.api_base}#{path}",
+        params: params,
+        body: body,
+        headers: auth_headers.merge(headers)
+      }
+
       response = http.run_request(
         method,
         path,
@@ -102,7 +111,7 @@ module MangoApps
 
       return response.body if response.success?
 
-      handle_error_response(response)
+      handle_error_response(response, request_details)
     end
 
     def auth_headers
@@ -143,7 +152,7 @@ module MangoApps
       end
     end
 
-    def handle_error_response(response)
+    def handle_error_response(response, request_details = nil)
       error_class = case response.status
                     when 400 then MangoApps::BadRequestError
                     when 401 then MangoApps::UnauthorizedError
@@ -158,7 +167,8 @@ module MangoApps
       raise error_class.new(
         error_message,
         status_code: response.status,
-        response_body: response.body
+        response_body: response.body,
+        request_details: request_details
       )
     end
 

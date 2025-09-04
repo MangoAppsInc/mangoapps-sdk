@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require_relative "../real_spec_helper"
+require_relative "../shared_test_helpers"
 
 RSpec.describe "MangoApps Learn Module" do
+  include SharedTestHelpers
   let(:config) { MangoApps::Config.new }
   let(:client) { MangoApps::Client.new(config) }
 
@@ -12,6 +14,7 @@ RSpec.describe "MangoApps Learn Module" do
       skip "No valid access token found. Run OAuth tests first."
     end
   end
+
 
   describe "Course Catalog" do
     it "gets course catalog" do

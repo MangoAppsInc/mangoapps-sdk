@@ -7,8 +7,8 @@ Gem::Specification.new do |s|
   s.version     = MangoApps::VERSION
   s.summary     = "Ruby SDK for MangoApps APIs with OAuth2/OIDC authentication"
   s.description = "A clean, test-driven Ruby SDK for MangoApps APIs with OAuth2/OpenID Connect support. " \
-                  "Provides easy-to-use methods for interacting with MangoApps REST APIs including posts, " \
-                  "files, users, and more."
+                  "Provides modular, easy-to-use methods for interacting with MangoApps REST APIs including " \
+                  "Learn (courses, categories), Users (profiles), and more. Built with real TDD and comprehensive error handling."
   s.authors     = ["MangoApps Inc."]
   s.email       = ["support@mangoapps.com"]
   s.license     = "MIT"
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 3.0"
 
   # Files to include in the gem
-  s.files = Dir["lib/**/*", "README.md", "LICENSE", "CHANGELOG.md"]
+  s.files = Dir["lib/**/*", "README.md", "LICENSE", "CHANGELOG.md", "MODULE_DEVELOPMENT.md"]
   s.require_paths = ["lib"]
 
   # Runtime dependencies

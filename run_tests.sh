@@ -88,7 +88,7 @@ echo ""
 echo "🔗 API Tests"
 echo "============"
 print_status "Running API tests..."
-if bundle exec rspec spec/mangoapps/api_spec.rb spec/mangoapps/learn_spec.rb --format documentation; then
+if bundle exec rspec spec/mangoapps/learn_spec.rb spec/mangoapps/users_spec.rb --format documentation; then
     print_success "API tests passed!"
     echo ""
     echo "🎉 All tests completed successfully!"
@@ -96,7 +96,8 @@ if bundle exec rspec spec/mangoapps/api_spec.rb spec/mangoapps/learn_spec.rb --f
     print_success "MangoApps SDK is working correctly!"
     echo ""
     print_status "Test Summary:"
-    echo "  🔗 API tests: ✅ All endpoints tested and working"
+    echo "  📚 Learn module: ✅ All endpoints tested and working"
+    echo "  👤 Users module: ✅ All endpoints tested and working"
     echo ""
     print_status "You can now start developing with confidence!"
     echo "  - All API endpoints are tested and working"

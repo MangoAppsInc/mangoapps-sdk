@@ -5,17 +5,19 @@
 You are working on the MangoApps SDK, a Ruby gem for interacting with MangoApps APIs using OAuth2/OpenID Connect.
 
 ## Core Principles
-- **TDD First**: Always write tests before implementation
+- **Real TDD First**: Always write real tests before implementation (no mocking)
 - **Incremental Development**: Add one resource at a time
 - **Clean Architecture**: Modular, testable code
-- **OAuth2/OIDC**: Proper authentication flow
+- **OAuth2/OIDC**: Proper authentication flow with real credentials
 - **Faraday HTTP**: With retries and JSON handling
+- **Environment Variables**: Secure credential management
 
 ## Technology Stack
 - **Language**: Ruby (>= 3.0)
-- **Testing**: RSpec + WebMock
+- **Testing**: RSpec (real tests only, no mocking)
 - **HTTP Client**: Faraday with retry middleware
 - **Authentication**: OAuth2 + OIDC discovery
+- **Configuration**: Environment variables with dotenv
 - **Package Manager**: Bundler + RubyGems
 
 ## File Structure
@@ -39,7 +41,7 @@ mangoapps-sdk/
 ```
 
 ## Development Workflow
-1. **Write Test First**: Create spec file with WebMock stubs
+1. **Write Real Test First**: Create test in `spec/mangoapps/integration_spec.rb` with actual OAuth
 2. **Run Tests**: `bundle exec rspec` (should fail)
 3. **Implement**: Add minimal code to make tests pass
 4. **Refactor**: Improve code while keeping tests green
@@ -53,33 +55,32 @@ mangoapps-sdk/
 - Keep methods small and focused
 
 ## Testing Guidelines
-- Always stub HTTP requests with WebMock
-- Test both success and error cases
+- **Real OAuth Testing Only**: No mocking, use actual MangoApps API
+- Test both success and error cases with real credentials
 - Use descriptive test names
-- Mock access tokens in tests
-- Assert on both request and response
+- Use environment variables for OAuth credentials
+- Test against actual MangoApps domain
+- Assert on real API responses
 
 ## Resource Development Pattern
 When adding a new resource (e.g., Files, Users):
 
-1. **Create Test File**:
+1. **Add Real Test to Integration Spec**:
 ```ruby
-# spec/mangoapps/resources/files_spec.rb
-RSpec.describe "MangoApps::Client::Files" do
-  let(:client) { MangoApps::Client.new(config) }
-
-  before do
-    allow(client).to receive(:access_token)
-      .and_return(double(token: "testtoken"))
+# Add to spec/mangoapps/integration_spec.rb
+describe "Real Files API" do
+  it "lists files from actual MangoApps API" do
+    # Test with real OAuth token
+    result = client.files_list
+    expect(result).to be_a(Hash)
+    expect(result).to have_key("files")
   end
 
-  it "lists files" do
-    stub_request(:get, "https://yourdomain.mangoapps.com/api/files")
-      .with(headers: { "Authorization" => "Bearer testtoken" })
-      .to_return(status: 200, body: { "files" => [] }.to_json)
-
-    res = client.files_list
-    expect(res).to include("files")
+  it "creates file via actual MangoApps API" do
+    # Test with real OAuth token
+    result = client.files_create(name: "test.txt", content: "test content")
+    expect(result).to be_a(Hash)
+    expect(result["id"]).to be_present
   end
 end
 ```
@@ -132,14 +133,15 @@ MangoApps::Client.include(MangoApps::Client::Files)
 
 ## AI Assistant Instructions
 When helping with this project:
-1. **Always follow TDD approach** - Write tests before implementation
+1. **Always follow Real TDD approach** - Write real tests before implementation (no mocking)
 2. **Production-ready code** - Focus on error handling, security, and performance
 3. **Incremental development** - Add one resource at a time
-4. **Comprehensive testing** - Cover success, error, and edge cases
-5. **Documentation** - Update README and add code examples
-6. **Security first** - Implement PKCE, validate inputs, handle tokens securely
-7. **Error handling** - Use specific exception types and meaningful messages
-8. **Code quality** - Follow Ruby best practices and RuboCop guidelines
+4. **Real OAuth testing** - Use actual MangoApps API with real credentials
+5. **Environment variables** - Use .env for secure credential management
+6. **Documentation** - Update README and add code examples
+7. **Security first** - Implement PKCE, validate inputs, handle tokens securely
+8. **Error handling** - Use specific exception types and meaningful messages
+9. **Code quality** - Follow Ruby best practices and RuboCop guidelines
 
 ## Production Guidelines
 - **OAuth Security**: Always use PKCE for public clients

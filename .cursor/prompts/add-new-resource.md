@@ -1,42 +1,37 @@
-# Add New Resource - Production TDD Workflow
+# Add New Resource - Real TDD Workflow
 
 Use this prompt when adding a new API resource to the MangoApps SDK.
 
 ## Instructions
 1. Replace `[RESOURCE_NAME]` with the actual resource name (e.g., `files`, `users`, `tasks`)
 2. Replace `[RESOURCE_TITLE]` with the proper title (e.g., `Files`, `Users`, `Tasks`)
-3. Follow the TDD workflow: Test → Implement → Refactor
+3. Follow the **Real TDD** workflow: Real Test → Implement → Refactor
 4. **Production Ready**: Include error handling, input validation, and comprehensive tests
 5. **Security**: Validate all inputs and handle authentication properly
+6. **Real OAuth**: Use actual MangoApps API with real credentials (no mocking)
 
 ## Template
 
-### Step 1: Create Test File
-Create `spec/mangoapps/resources/[RESOURCE_NAME]_spec.rb`:
+### Step 1: Add Real Test to Integration Spec
+Add to `spec/mangoapps/integration_spec.rb`:
 
 ```ruby
-# frozen_string_literal: true
-require "spec_helper"
-require "mangoapps"
-
-RSpec.describe "MangoApps::Client::[RESOURCE_TITLE]" do
-  let(:domain)        { "yourdomain.mangoapps.com" }
-  let(:api_base)      { "https://#{domain}/api" }
-  let(:config) do
-    MangoApps::Config.new(
-      domain: domain,
-      client_id:     "cid",
-      client_secret: "secret",
-      redirect_uri:  "http://localhost/cb"
-    )
+# Add this describe block to the existing integration spec
+describe "Real [RESOURCE_TITLE] API" do
+  it "lists [RESOURCE_NAME] from actual MangoApps API" do
+    # Test with real OAuth token
+    result = client.[RESOURCE_NAME]_list
+    expect(result).to be_a(Hash)
+    expect(result).to have_key("[RESOURCE_NAME]")
   end
-  let(:client) { MangoApps::Client.new(config) }
 
-  before do
-    # Stub an access token so Authorization header is present
-    allow(client).to receive(:access_token)
-      .and_return(double(token: "testtoken"))
+  it "creates [RESOURCE_NAME] via actual MangoApps API" do
+    # Test with real OAuth token
+    result = client.[RESOURCE_NAME]_create(name: "Test [RESOURCE_TITLE]", description: "Test description")
+    expect(result).to be_a(Hash)
+    expect(result["id"]).to be_present
   end
+end
 
   describe "#[RESOURCE_NAME]_list" do
     it "GETs /[RESOURCE_NAME] with Authorization header and returns parsed JSON" do
@@ -109,7 +104,7 @@ end
 
 ### Step 2: Run Tests (Should Fail)
 ```bash
-bundle exec rspec spec/mangoapps/resources/[RESOURCE_NAME]_spec.rb
+bundle exec rspec spec/mangoapps/integration_spec.rb
 ```
 
 ### Step 3: Create Resource Module

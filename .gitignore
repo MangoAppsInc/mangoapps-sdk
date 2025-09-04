@@ -123,3 +123,6 @@ coverage/
 doc/
 rdoc/
 .yardoc/
+
+# Environment variables
+.env

@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
 
   # Runtime dependencies
   s.add_dependency "addressable", "~> 2.8"
+  s.add_dependency "dotenv", "~> 2.8"
   s.add_dependency "faraday", "~> 2.10"
   s.add_dependency "faraday-retry", "~> 2.2"
   s.add_dependency "multi_json", "~> 1.15"

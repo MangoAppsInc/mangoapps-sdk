@@ -4,16 +4,16 @@ This document provides comprehensive instructions for AI assistants working on t
 
 ## Project Context
 
-The MangoApps SDK is a Ruby gem that provides a clean, test-driven interface for interacting with MangoApps APIs. It uses OAuth2/OpenID Connect for authentication and follows strict TDD principles.
+The MangoApps SDK is a Ruby gem that provides a clean, **real TDD** interface for interacting with MangoApps APIs. It uses OAuth2/OpenID Connect for authentication and follows strict **Real TDD** principles with no mocking - only actual OAuth testing with real MangoApps credentials.
 
 ## Core Principles
 
-### 1. Test-Driven Development (TDD)
-- **ALWAYS** write tests before implementation
+### 1. Real Test-Driven Development (TDD)
+- **ALWAYS** write real tests before implementation (no mocking)
 - Follow Red → Green → Refactor cycle
 - Tests must be comprehensive and cover edge cases
-- Use WebMock to stub HTTP requests
-- Mock access tokens in all tests
+- Use actual MangoApps API with real OAuth credentials
+- Test against real MangoApps domain
 
 ### 2. Incremental Development
 - Add one resource at a time

@@ -35,7 +35,7 @@ module MangoApps
         )
       rescue JSON::ParserError => e
         raise MangoApps::DiscoveryError, "Invalid JSON response from discovery endpoint: #{e.message}"
-      rescue Net::TimeoutError, Net::ConnectionFailed => e
+      rescue Net::TimeoutError, Net::ConnectionFailed, Timeout::Error => e
         raise MangoApps::DiscoveryError, "Failed to connect to discovery endpoint: #{e.message}"
       end
     end

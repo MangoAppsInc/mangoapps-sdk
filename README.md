@@ -4,16 +4,17 @@
 [![Build Status](https://github.com/MangoAppsInc/mangoapps-sdk/workflows/CI/badge.svg)](https://github.com/MangoAppsInc/mangoapps-sdk/actions)
 [![Code Climate](https://codeclimate.com/github/MangoAppsInc/mangoapps-sdk/badges/gpa.svg)](https://codeclimate.com/github/MangoAppsInc/mangoapps-sdk)
 
-A clean, test-driven Ruby SDK for MangoApps APIs with OAuth2/OpenID Connect authentication. This gem provides easy-to-use methods for interacting with MangoApps REST APIs including posts, files, users, and more.
+A clean, **real TDD** Ruby SDK for MangoApps APIs with OAuth2/OpenID Connect authentication. No mocking - only actual OAuth testing with real MangoApps credentials. This gem provides easy-to-use methods for interacting with MangoApps REST APIs including posts, files, users, and more.
 
 ## Features
 
 - 🔐 **OAuth2/OpenID Connect** authentication with automatic token refresh
 - 🚀 **Simple API** with intuitive method names
-- 🧪 **Test-driven development** with comprehensive test coverage
+- 🧪 **Real TDD** - no mocking, only actual OAuth testing
 - 🔄 **Automatic retries** with exponential backoff
 - 📝 **Comprehensive error handling** with specific exception types
 - 🛡️ **Security-first** design with PKCE support
+- 🔧 **Environment variable configuration** for secure credentials
 - 📚 **Well-documented** with examples and guides
 
 ## Installation
@@ -38,23 +39,37 @@ gem install mangoapps-sdk
 
 ## Quick Start
 
-### 1. Configuration
+### 1. Environment Setup
+
+Create a `.env` file with your MangoApps credentials:
+
+```bash
+# .env
+MANGOAPPS_DOMAIN=yourdomain.mangoapps.com
+MANGOAPPS_CLIENT_ID=your_client_id_here
+MANGOAPPS_CLIENT_SECRET=your_client_secret_here
+MANGOAPPS_REDIRECT_URI=https://localhost:3000/oauth/callback
+MANGOAPPS_SCOPE=openid profile email
+```
+
+### 2. Configuration
 
 ```ruby
 require "mangoapps"
 
+# Automatically loads from .env file
+config = MangoApps::Config.new
+
+# Or override specific values
 config = MangoApps::Config.new(
-  domain:        "yourdomain.mangoapps.com",
-  client_id:     ENV["MANGOAPPS_CLIENT_ID"],
-  client_secret: ENV["MANGOAPPS_CLIENT_SECRET"],
-  redirect_uri:  "http://localhost:3000/oauth/callback",
-  scope:         "openid profile offline_access"
+  domain: "custom.mangoapps.com"
+  # Other values loaded from .env
 )
 
 client = MangoApps::Client.new(config)
 ```
 
-### 2. OAuth Authentication
+### 3. OAuth Authentication
 
 ```ruby
 # Generate authorization URL
@@ -274,20 +289,34 @@ config = MangoApps::Config.new(
 ```bash
 git clone https://github.com/MangoAppsInc/mangoapps-sdk.git
 cd mangoapps-sdk
+cp .env.example .env
+# Edit .env with your MangoApps credentials
 bundle install
 ```
 
-### Running Tests
+### Real TDD Testing
+
+This SDK uses **real TDD** - no mocking, only actual OAuth testing:
 
 ```bash
-# Run all tests
+# Run real OAuth tests
 bundle exec rspec
 
-# Run with coverage
+# Run with documentation format
 bundle exec rspec --format documentation
 
-# Run specific test
-bundle exec rspec spec/mangoapps/resources/posts_spec.rb
+# Get OAuth token for testing
+ruby test_real_oauth.rb
+
+# Complete OAuth flow example
+ruby examples/oauth_flow.rb
+```
+
+### TDD Workflow
+
+```bash
+# Get TDD workflow guide
+ruby tdd_workflow.rb
 ```
 
 ### Code Quality

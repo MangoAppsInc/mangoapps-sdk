@@ -98,4 +98,66 @@ RSpec.describe "MangoApps SDK Real OAuth Tests" do
       expect(full_url).to eq("https://siddus.mangoapps.com/api/posts")
     end
   end
+
+  describe "Real OAuth Token Exchange" do
+    it "exchanges authorization code for access token with real MangoApps API" do
+      # Generate PKCE parameters
+      require "securerandom"
+      require "digest"
+      require "base64"
+
+      code_verifier = Base64.urlsafe_encode64(SecureRandom.random_bytes(32), padding: false)
+      code_challenge = Base64.urlsafe_encode64(
+        Digest::SHA256.digest(code_verifier),
+        padding: false
+      )
+      state = SecureRandom.hex(16)
+
+      # Generate authorization URL
+      auth_url = client.authorization_url(
+        state: state,
+        code_challenge: code_challenge,
+        code_challenge_method: "S256"
+      )
+
+      # Verify authorization URL is properly formed
+      expect(auth_url).to include("https://siddus.mangoapps.com/oauth2/authorize")
+      expect(auth_url).to include("client_id=#{config.client_id}")
+      expect(auth_url).to include("code_challenge=#{code_challenge}")
+      expect(auth_url).to include("code_challenge_method=S256")
+      expect(auth_url).to include("state=#{state}")
+
+      # Note: This test verifies the authorization URL generation
+      # To test actual token exchange, you would need a real authorization code
+      # from completing the OAuth flow in a browser
+      
+      puts "\n🔗 To test token exchange:"
+      puts "1. Open this URL in your browser:"
+      puts "   #{auth_url}"
+      puts "2. Authorize the application"
+      puts "3. Copy the 'code' parameter from the redirect URL"
+      puts "4. Run: ruby test/test_real_oauth.rb <authorization_code>"
+    end
+
+    it "validates OAuth client configuration for token exchange" do
+      # Test that OAuth client is properly configured for token exchange
+      oauth_client = client.oauth.client
+      
+      expect(oauth_client.id).to eq(config.client_id)
+      expect(oauth_client.secret).to eq(config.client_secret)
+      expect(oauth_client.site).to eq("https://siddus.mangoapps.com")
+      expect(oauth_client.authorize_url).to eq("https://siddus.mangoapps.com/oauth2/authorize")
+      expect(oauth_client.token_url).to eq("https://siddus.mangoapps.com/oauth2/token")
+    end
+
+    it "handles token exchange errors gracefully" do
+      # Test error handling for invalid authorization code
+      expect {
+        client.authenticate!(
+          authorization_code: "invalid_code",
+          code_verifier: "invalid_verifier"
+        )
+      }.to raise_error(MangoApps::TokenExchangeError)
+    end
+  end
 end

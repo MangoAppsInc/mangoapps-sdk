@@ -109,7 +109,6 @@ MangoApps::Client.include(MangoApps::Client::Files)
 ## Common Commands
 - `bundle exec rspec` - Run tests
 - `bundle exec rspec --format documentation` - Verbose test output
-- `bundle exec rubocop` - Lint code
 - `bundle install` - Install dependencies
 - `gem build mangoapps-sdk.gemspec` - Build gem
 

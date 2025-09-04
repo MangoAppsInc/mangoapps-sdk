@@ -1,10 +1,6 @@
 # MangoApps Ruby SDK
 
-[![Gem Version](https://badge.fury.io/rb/mangoapps-sdk.svg)](https://badge.fury.io/rb/mangoapps-sdk)
-[![Build Status](https://github.com/MangoAppsInc/mangoapps-sdk/workflows/CI/badge.svg)](https://github.com/MangoAppsInc/mangoapps-sdk/actions)
-[![Code Climate](https://codeclimate.com/github/MangoAppsInc/mangoapps-sdk/badges/gpa.svg)](https://codeclimate.com/github/MangoAppsInc/mangoapps-sdk)
-
-A clean, **real TDD** Ruby SDK for MangoApps APIs with OAuth2/OpenID Connect authentication. No mocking - only actual OAuth testing with real MangoApps credentials. This gem provides easy-to-use methods for interacting with MangoApps REST APIs including posts, files, users, and more.
+A clean, **real TDD** Ruby SDK for MangoApps APIs with OAuth2/OpenID Connect authentication. No mocking - only actual OAuth testing with real MangoApps credentials.
 
 ## Features
 
@@ -84,125 +80,42 @@ client.authenticate!(authorization_code: params[:code])
 posts = client.posts_list
 ```
 
-### 3. API Usage
-
-```ruby
-# Create a post
-post = client.posts_create(
-  title: "Hello from Ruby SDK",
-  content: "This is my first post using the MangoApps Ruby SDK!"
-)
-
-# List posts
-posts = client.posts_list(limit: 10)
-
-# Get specific post
-post = client.posts_get(post["id"])
-```
-
-## OAuth2 Flow
-
-The SDK supports the standard OAuth2 authorization code flow with PKCE for enhanced security.
-
-### Basic Flow
-
-```ruby
-# 1. Generate authorization URL
-state = SecureRandom.hex(16)
-auth_url = client.authorization_url(state: state)
-
-# 2. Redirect user to auth_url
-# User authorizes and gets redirected back with code
-
-# 3. Exchange code for tokens
-client.authenticate!(authorization_code: params[:code])
-
-# 4. Make API calls
-posts = client.posts_list
-```
-
-### PKCE Flow (Recommended)
-
-```ruby
-require "securerandom"
-require "digest"
-require "base64"
-
-# Generate PKCE parameters
-code_verifier = Base64.urlsafe_encode64(SecureRandom.random_bytes(32), padding: false)
-code_challenge = Base64.urlsafe_encode64(
-  Digest::SHA256.digest(code_verifier),
-  padding: false
-)
-
-# Generate authorization URL with PKCE
-state = SecureRandom.hex(16)
-auth_url = client.authorization_url(
-  state: state,
-  code_challenge: code_challenge,
-  code_challenge_method: "S256"
-)
-
-# Exchange code with PKCE verifier
-client.authenticate!(
-  authorization_code: params[:code],
-  code_verifier: code_verifier
-)
-```
-
 ## API Resources
 
 ### Posts
 
 ```ruby
 # List posts
-posts = client.posts_list(limit: 20, offset: 0)
+posts = client.posts_list(limit: 10)
 
-# Create post
-post = client.posts_create(
-  title: "My Post",
-  content: "Post content here",
-  pin: true
+# Create a post
+new_post = client.posts_create(
+  title: "Hello World",
+  content: "This is my first post"
 )
-
-# Get specific post
-post = client.posts_get(123)
-
-# Update post
-updated_post = client.posts_update(123, title: "Updated Title")
-
-# Delete post
-client.posts_delete(123)
 ```
 
 ### Files (Coming Soon)
 
 ```ruby
 # List files
-files = client.files_list(folder_id: 456)
+files = client.files_list
 
-# Upload file
-file = client.files_upload(
-  file_path: "/path/to/file.pdf",
-  folder_id: 456,
-  description: "My uploaded file"
+# Upload a file
+file = client.files_create(
+  name: "document.pdf",
+  content: file_data
 )
-
-# Download file
-file_content = client.files_download(789)
 ```
 
 ### Users (Coming Soon)
 
 ```ruby
-# Get current user
-user = client.users_me
+# List users
+users = client.users_list
 
-# Get user by ID
-user = client.users_get(123)
-
-# Search users
-users = client.users_search(query: "john")
+# Get user details
+user = client.users_get(user_id: 123)
 ```
 
 ## Error Handling
@@ -215,71 +128,56 @@ begin
 rescue MangoApps::AuthenticationError => e
   puts "Authentication failed: #{e.message}"
 rescue MangoApps::APIError => e
-  puts "API error (#{e.status_code}): #{e.message}"
+  puts "API error: #{e.message}"
 rescue MangoApps::RateLimitError => e
   puts "Rate limited: #{e.message}"
-  # Wait and retry
-rescue MangoApps::Error => e
-  puts "SDK error: #{e.message}"
 end
 ```
 
-### Error Types
+### Available Exception Types
 
-- `MangoApps::AuthenticationError` - Authentication/authorization issues
-- `MangoApps::TokenExpiredError` - Access token expired
+- `MangoApps::Error` - Base error class
 - `MangoApps::APIError` - General API errors
-- `MangoApps::BadRequestError` - 400 Bad Request
-- `MangoApps::UnauthorizedError` - 401 Unauthorized
-- `MangoApps::ForbiddenError` - 403 Forbidden
-- `MangoApps::NotFoundError` - 404 Not Found
-- `MangoApps::RateLimitError` - 429 Rate Limited
-- `MangoApps::ServerError` - 5xx Server Errors
+- `MangoApps::AuthenticationError` - Authentication failures
+- `MangoApps::TokenExpiredError` - Token expiration
+- `MangoApps::BadRequestError` - 400 errors
+- `MangoApps::UnauthorizedError` - 401 errors
+- `MangoApps::ForbiddenError` - 403 errors
+- `MangoApps::NotFoundError` - 404 errors
+- `MangoApps::RateLimitError` - 429 errors
+- `MangoApps::ServerError` - 5xx errors
 
 ## Configuration Options
 
 ```ruby
 config = MangoApps::Config.new(
-  domain:        "yourdomain.mangoapps.com",    # Required: Your MangoApps domain
-  client_id:     "your_client_id",              # Required: OAuth client ID
-  client_secret: "your_client_secret",          # Required: OAuth client secret
-  redirect_uri:  "http://localhost:3000/cb",    # Required: OAuth redirect URI
-  scope:         "openid profile offline_access", # Optional: OAuth scopes
-  timeout:       30,                            # Optional: HTTP timeout (seconds)
-  open_timeout:  10,                            # Optional: HTTP open timeout (seconds)
-  logger:        Logger.new(STDOUT),            # Optional: Logger instance
-  token_store:   MyTokenStore.new               # Optional: Custom token storage
+  domain: "yourdomain.mangoapps.com",
+  client_id: "your_client_id",
+  client_secret: "your_client_secret",
+  redirect_uri: "https://localhost:3000/oauth/callback",
+  scope: "openid profile email",
+  timeout: 30,
+  open_timeout: 10,
+  logger: Logger.new(STDOUT)
 )
 ```
 
 ## Token Storage
 
-By default, tokens are not persisted. You can provide a custom token store:
+The SDK automatically handles token storage and refresh:
 
 ```ruby
-class FileTokenStore
-  def initialize(file_path = "mangoapps_token.json")
-    @file_path = file_path
-  end
-
-  def save(token_hash)
-    File.write(@file_path, token_hash.to_json)
-  end
-
-  def load
-    return nil unless File.exist?(@file_path)
-
-    JSON.parse(File.read(@file_path))
-  end
+# Check if authenticated
+if client.authenticated?
+  # Make API calls
+  posts = client.posts_list
+else
+  # Redirect to authorization
+  auth_url = client.authorization_url
 end
 
-config = MangoApps::Config.new(
-  domain: "yourdomain.mangoapps.com",
-  client_id: "your_client_id",
-  client_secret: "your_client_secret",
-  redirect_uri: "http://localhost:3000/cb",
-  token_store: FileTokenStore.new
-)
+# Manual token refresh
+client.refresh_token! if client.access_token.expired?
 ```
 
 ## Development
@@ -304,19 +202,6 @@ bundle exec rspec
 
 # Run with documentation format
 bundle exec rspec --format documentation
-
-# Get OAuth token for testing
-ruby test_real_oauth.rb
-
-# Complete OAuth flow example
-ruby examples/oauth_flow.rb
-```
-
-### TDD Workflow
-
-```bash
-# Get TDD workflow guide
-ruby tdd_workflow.rb
 ```
 
 ### Code Quality
@@ -329,23 +214,14 @@ bundle exec rubocop
 bundle exec rubocop -a
 ```
 
-### Building the Gem
-
-```bash
-gem build mangoapps-sdk.gemspec
-gem install mangoapps-sdk-0.1.0.gem
-```
-
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Write tests for your changes
-4. Ensure all tests pass (`bundle exec rspec`)
-5. Run the linter (`bundle exec rubocop`)
-6. Commit your changes (`git commit -m 'Add amazing feature'`)
-7. Push to the branch (`git push origin feature/amazing-feature`)
-8. Open a Pull Request
+2. Create a feature branch
+3. Write real tests first (no mocking)
+4. Implement the feature
+5. Ensure all tests pass
+6. Submit a pull request
 
 ## License
 
@@ -353,10 +229,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- 📧 Email: support@mangoapps.com
-- 🐛 Issues: [GitHub Issues](https://github.com/MangoAppsInc/mangoapps-sdk/issues)
-- 📚 Documentation: [RubyDoc](https://rubydoc.info/gems/mangoapps-sdk)
-- 🌐 Website: [MangoApps](https://www.mangoapps.com)
+- **Documentation**: [RubyDoc](https://rubydoc.info/gems/mangoapps-sdk)
+- **Issues**: [GitHub Issues](https://github.com/MangoAppsInc/mangoapps-sdk/issues)
+- **MangoApps**: [Official Website](https://www.mangoapps.com)
 
 ## Changelog
 

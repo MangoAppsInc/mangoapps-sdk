@@ -126,3 +126,6 @@ rdoc/
 
 # Environment variables
 .env
+
+# Test scripts (contain real credentials)
+test/

@@ -164,6 +164,34 @@ end
 category = client.course_category(category_id)
 ```
 
+#### Course Details
+```ruby
+# Get detailed course information by course ID
+course_id = 604
+course = client.course_details(course_id)
+
+# Access course data with clean dot notation
+course_data = course.course
+puts "Course: #{course_data.name} (ID: #{course_data.id})"
+puts "Description: #{course_data.description}"
+puts "Type: #{course_data.course_type}"
+puts "Delivery Mode: #{course_data.delivery_mode}"
+puts "Instructors: #{course_data.instructors.length}"
+puts "Fields: #{course_data.fields.length}"
+
+# Access course URLs
+puts "Start Course URL: #{course_data.start_course_url}"
+puts "Go to Course URL: #{course_data.goto_course_url}"
+
+# Access course fields (details, certification, etc.)
+course_data.fields.each do |field|
+  puts "Field: #{field.field_name}"
+  field.course_sub_fields.each do |sub_field|
+    puts "  #{sub_field.field_name}: #{sub_field.field_value}"
+  end
+end
+```
+
 #### My Learning
 ```ruby
 # Get user's learning progress and courses
@@ -242,6 +270,7 @@ end
 #### Learn Module  
 - **Course Catalog**: `client.course_catalog` - Get available courses
 - **Course Categories**: `client.course_categories` - Get course categories
+- **Course Details**: `client.course_details(course_id)` - Get detailed course information by ID
 - **My Learning**: `client.my_learning` - Get user's learning progress and courses
 
 #### Recognitions Module
@@ -285,6 +314,15 @@ courses.courses.each do |course|
   puts "   Type: #{course.course_type}"
   puts "   Delivery: #{course.delivery_mode}"
   puts "   URL: #{course.start_course_url}"
+  puts ""
+  
+  # Get detailed course information
+  course_details = client.course_details(course.id)
+  detailed_course = course_details.course
+  puts "   📖 Detailed Info:"
+  puts "   Description: #{detailed_course.description}"
+  puts "   Instructors: #{detailed_course.instructors.length}"
+  puts "   Fields: #{detailed_course.fields.length}"
   puts ""
 end
 
@@ -543,7 +581,7 @@ See [MODULES.md](MODULES.md) for detailed guidelines.
 
 ### Current Test Coverage
 
-- ✅ **Learn Module**: Course catalog, categories, and my learning
+- ✅ **Learn Module**: Course catalog, categories, course details, and my learning
 - ✅ **Users Module**: User profile and authentication
 - ✅ **Recognitions Module**: Award categories, core value tags, and leaderboard info
 - ✅ **Error Handling**: Comprehensive error logging and testing

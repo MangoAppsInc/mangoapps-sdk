@@ -5,6 +5,34 @@ All notable changes to the MangoApps Ruby SDK will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.5] - 2024-12-19
+
+### Added
+- **Get Team Awards API** in Recognitions Module
+  - `client.get_team_awards(project_id: id)` - Get team awards for a specific project/team
+  - Access to team award feeds, core value tags, and notification counts
+  - Clean dot notation access: `response.feeds`, `response.core_value_tags`, and `response.unread_counts`
+  - Comprehensive test coverage with real API validation using All Users team
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for get team awards API (8 total recognitions tests)
+- **Documentation** - Updated README with get team awards examples and complete recognition workflow
+- **API Completeness** - Recognitions module now includes 8 comprehensive endpoints for complete recognition management
+
+## [0.2.4] - 2024-12-19
+
+### Added
+- **Get Awards List API** in Recognitions Module
+  - `client.get_awards_list(category_id: id)` - Get awards for a specific category
+  - Access to award details including name, description, points, reward points, and attachment URLs
+  - Clean dot notation access: `response.get_awards_list` with comprehensive award data
+  - Comprehensive test coverage with real API validation using Safety & Quality category
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for get awards list API (6 total recognitions tests)
+- **Documentation** - Updated README with get awards list examples and complete recognition workflow
+- **API Completeness** - Recognitions module now includes 6 comprehensive endpoints for complete recognition management
+
 ## [0.2.3] - 2024-12-19
 
 ### Added

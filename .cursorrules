@@ -247,9 +247,23 @@ When helping with this project:
 4. **Incremental development** - Add one resource at a time
 5. **Real OAuth testing** - Use actual MangoApps API with real credentials
 6. **Environment variables** - Use .env for secure credential management
-7. **Documentation** - Update README and add code examples
+7. **Documentation** - Update README for users, DEVELOPER.md for developers
 8. **Security first** - Implement PKCE, validate inputs, handle tokens securely
 9. **Error handling** - Use specific exception types and meaningful messages
 10. **Code quality** - Follow Ruby best practices
+
+## Documentation Structure
+- **README.md** - User documentation (installation, usage, examples)
+- **DEVELOPER.md** - Developer documentation (adding APIs, testing, architecture)
+- **CHANGELOG.md** - Release notes and version history
+- **MODULES.md** - Module development guidelines
+
+## For SDK Development Tasks
+When adding new APIs or modules, refer to DEVELOPER.md for:
+- Complete module creation workflow
+- Testing guidelines and examples
+- Code style and architecture patterns
+- Documentation standards
+- Release process
 
 Remember: This is a production-ready, TDD-first project with separated OAuth and testing workflows!

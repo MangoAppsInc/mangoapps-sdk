@@ -177,4 +177,143 @@ RSpec.describe "MangoApps Recognitions Module" do
       end
     end
   end
+
+  describe "Get Awards List" do
+    it "gets awards list for specific category from actual MangoApps API" do
+      puts "\n🏆 Testing Recognitions API - Get Awards List..."
+      
+      # Use a known category ID from the award categories test
+      category_id = 4303  # Safety & Quality category
+      response = client.get_awards_list(category_id: category_id)
+      
+      expect(response).to be_a(MangoApps::Response) # Recognitions API returns wrapped response
+      expect(response).to respond_to(:get_awards_list)
+      expect(response.get_awards_list).to be_an(Array)
+      puts "✅ Get awards list API call successful!"
+      puts "📊 Response contains awards list data for category #{category_id}"
+      
+      # Validate the award structure using dot notation
+      if response.get_awards_list.any?
+        award = response.get_awards_list.first
+        expect(award).to respond_to(:id)
+        expect(award).to respond_to(:name)
+        expect(award).to respond_to(:description)
+        expect(award).to respond_to(:points)
+        expect(award).to respond_to(:attachment_url)
+        expect(award).to respond_to(:reward_points)
+        puts "✅ Awards list structure validated"
+        puts "📊 Found #{response.get_awards_list.length} awards in category"
+        puts "🏆 Sample award: #{award.name} (ID: #{award.id}) - Points: #{award.points} - Reward Points: #{award.reward_points}"
+      else
+        puts "📊 Awards list is empty for category #{category_id}"
+      end
+    end
+  end
+
+  describe "Get Profile Awards" do
+    it "gets user profile awards from actual MangoApps API" do
+      puts "\n🏆 Testing Recognitions API - Get Profile Awards..."
+      
+      response = client.get_profile_awards
+      
+      expect(response).to be_a(MangoApps::Response) # Recognitions API returns wrapped response
+      expect(response).to respond_to(:core_value_tags)
+      expect(response).to respond_to(:feeds)
+      expect(response).to respond_to(:unread_counts)
+      puts "✅ Get profile awards API call successful!"
+      puts "📊 Response contains profile awards data"
+      
+      # Validate core value tags structure
+      if response.core_value_tags.any?
+        tag = response.core_value_tags.first
+        expect(tag).to respond_to(:id)
+        expect(tag).to respond_to(:name)
+        expect(tag).to respond_to(:color)
+        expect(tag).to respond_to(:count)
+        puts "✅ Core value tags structure validated"
+        puts "📊 Found #{response.core_value_tags.length} core value tags"
+        puts "🎯 Sample tag: #{tag.name} (ID: #{tag.id}) - Count: #{tag.count}"
+      else
+        puts "📊 Core value tags list is empty"
+      end
+      
+      # Validate feeds structure
+      if response.feeds.any?
+        feed = response.feeds.first
+        expect(feed).to respond_to(:id)
+        expect(feed).to respond_to(:body)
+        expect(feed).to respond_to(:recognition_points)
+        expect(feed).to respond_to(:from_user)
+        expect(feed).to respond_to(:feed_property)
+        puts "✅ Feeds structure validated"
+        puts "📊 Found #{response.feeds.length} award feeds"
+        puts "🏆 Sample feed: #{feed.feed_property.title} - Points: #{feed.recognition_points}"
+      else
+        puts "📊 Feeds list is empty"
+      end
+      
+      # Validate unread counts structure
+      if response.unread_counts
+        expect(response.unread_counts).to respond_to(:unread_notification_count)
+        puts "✅ Unread counts structure validated"
+        puts "📊 Unread notifications: #{response.unread_counts.unread_notification_count}"
+      end
+    end
+  end
+
+  describe "Get Team Awards" do
+    it "gets team awards for specific project from actual MangoApps API" do
+      puts "\n🏆 Testing Recognitions API - Get Team Awards..."
+      
+      # Use a known project ID from the example
+      project_id = 117747  # All Users team
+      response = client.get_team_awards(project_id: project_id)
+      
+      expect(response).to be_a(MangoApps::Response) # Recognitions API returns wrapped response
+      expect(response).to respond_to(:core_value_tags)
+      expect(response).to respond_to(:feeds)
+      expect(response).to respond_to(:unread_counts)
+      puts "✅ Get team awards API call successful!"
+      puts "📊 Response contains team awards data for project #{project_id}"
+      
+      # Validate core value tags structure
+      if response.core_value_tags.any?
+        tag = response.core_value_tags.first
+        expect(tag).to respond_to(:id)
+        expect(tag).to respond_to(:name)
+        expect(tag).to respond_to(:color)
+        expect(tag).to respond_to(:count)
+        puts "✅ Core value tags structure validated"
+        puts "📊 Found #{response.core_value_tags.length} core value tags"
+        puts "🎯 Sample tag: #{tag.name} (ID: #{tag.id}) - Count: #{tag.count}"
+      else
+        puts "📊 Core value tags list is empty"
+      end
+      
+      # Validate feeds structure
+      if response.feeds.any?
+        feed = response.feeds.first
+        expect(feed).to respond_to(:id)
+        expect(feed).to respond_to(:body)
+        expect(feed).to respond_to(:recognition_points)
+        expect(feed).to respond_to(:from_user)
+        expect(feed).to respond_to(:feed_property)
+        expect(feed).to respond_to(:group_id)
+        expect(feed).to respond_to(:group_name)
+        puts "✅ Feeds structure validated"
+        puts "📊 Found #{response.feeds.length} team award feeds"
+        puts "🏆 Sample feed: #{feed.feed_property.title} - Points: #{feed.recognition_points}"
+        puts "👥 Team: #{feed.group_name} (ID: #{feed.group_id})"
+      else
+        puts "📊 Feeds list is empty"
+      end
+      
+      # Validate unread counts structure
+      if response.unread_counts
+        expect(response.unread_counts).to respond_to(:unread_notification_count)
+        puts "✅ Unread counts structure validated"
+        puts "📊 Unread notifications: #{response.unread_counts.unread_notification_count}"
+      end
+    end
+  end
 end

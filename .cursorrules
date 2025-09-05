@@ -48,7 +48,7 @@ mangoapps-sdk/
 ├── run_auth.sh                   # OAuth flow script
 ├── run_tests.sh                  # API test runner
 ├── generate_module.rb            # Module generator script
-├── MODULE_DEVELOPMENT.md         # Development guidelines
+├── MODULES.md                    # Development guidelines
 ├── .env                          # Environment variables (credentials)
 ├── .env.example                  # Environment template
 └── .cursorrules                  # This file

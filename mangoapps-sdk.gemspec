@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 3.0"
 
   # Files to include in the gem
-  s.files = Dir["lib/**/*", "README.md", "LICENSE", "CHANGELOG.md", "MODULE_DEVELOPMENT.md"]
+  s.files = Dir["lib/**/*", "README.md", "LICENSE", "CHANGELOG.md", "MODULES.md"]
   s.require_paths = ["lib"]
 
   # Runtime dependencies

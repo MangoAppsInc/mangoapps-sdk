@@ -55,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `./run_tests.sh` - Fast API testing with token validation
 - **Module Generator** (`generate_module.rb`) for automated module creation
 - **Shared Test Helpers** for consistent testing patterns
-- **Development Documentation** (`MODULE_DEVELOPMENT.md`)
+- **Development Documentation** (`MODULES.md`)
 
 ### Technical Implementation
 - **Faraday HTTP Client** with retry middleware and JSON handling
@@ -103,4 +103,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Announcements Module**: Company announcements
 
 ### Contributing
-See [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) for guidelines on adding new modules and APIs.
+See [MODULES.md](MODULES.md) for guidelines on adding new modules and APIs.

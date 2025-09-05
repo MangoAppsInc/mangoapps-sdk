@@ -539,7 +539,7 @@ The `spec/module_template.rb` provides a clean, minimal template with:
 - ✅ **Clean response validation** with `MangoApps::Response` objects
 - ✅ **Dot notation testing** for intuitive API access
 
-See [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) for detailed guidelines.
+See [MODULES.md](MODULES.md) for detailed guidelines.
 
 ### Current Test Coverage
 

@@ -187,6 +187,51 @@ learning.section.each do |section|
 end
 ```
 
+### Recognitions Module
+
+#### Award Categories
+```ruby
+# Get award categories
+categories = client.award_categories
+
+# Access award category data with clean dot notation
+categories.award_categories.each do |category|
+  puts "#{category.name} (ID: #{category.id}) - Permission: #{category.recipient_permission}"
+end
+```
+
+#### Core Value Tags
+```ruby
+# Get core value tags
+tags = client.core_value_tags
+
+# Access core value tag data with clean dot notation
+tags.core_value_tags.each do |tag|
+  puts "#{tag.name} (ID: #{tag.id}) - Color: ##{tag.color}"
+end
+```
+
+#### Leaderboard Info
+```ruby
+# Get leaderboard information
+leaderboard = client.leaderboard_info
+
+# Check if leaderboard data is available
+if leaderboard.leaderboard_info
+  # Access user leaderboard with clean dot notation
+  leaderboard.leaderboard_info.user_info.each do |user|
+    puts "🏅 #{user.name} (Rank: #{user.rank}) - Awards: #{user.award_count}"
+  end
+  
+  # Access team leaderboard with clean dot notation
+  leaderboard.leaderboard_info.team_info.each do |team|
+    puts "🏆 #{team.name} (Rank: #{team.rank}) - Awards: #{team.award_count}"
+  end
+else
+  puts "No leaderboard data configured"
+end
+```
+
 ## Available Modules
 
 ### ✅ Currently Implemented
@@ -198,6 +243,11 @@ end
 - **Course Catalog**: `client.course_catalog` - Get available courses
 - **Course Categories**: `client.course_categories` - Get course categories
 - **My Learning**: `client.my_learning` - Get user's learning progress and courses
+
+#### Recognitions Module
+- **Award Categories**: `client.award_categories` - Get recognition award categories
+- **Core Value Tags**: `client.core_value_tags` - Get core value tags for recognition
+- **Leaderboard Info**: `client.leaderboard_info` - Get user and team leaderboard information
 
 ## Complete Examples
 
@@ -269,6 +319,50 @@ learning.section.each do |section|
     puts "     URL: #{course.start_course_url}"
     puts ""
   end
+end
+```
+
+### Recognition Management
+```ruby
+# Get award categories
+categories = client.award_categories
+
+# Display available award categories
+puts "🏆 Available Award Categories:"
+categories.award_categories.each do |category|
+  puts "  • #{category.name} (ID: #{category.id})"
+  puts "    Permission: #{category.recipient_permission}"
+end
+puts ""
+
+# Get core value tags
+tags = client.core_value_tags
+
+# Display core value tags
+puts "🎯 Core Value Tags:"
+tags.core_value_tags.each do |tag|
+  puts "  • #{tag.name} (ID: #{tag.id})"
+  puts "    Color: ##{tag.color}"
+end
+puts ""
+
+# Get leaderboard information
+leaderboard = client.leaderboard_info
+
+# Display leaderboard if available
+if leaderboard.leaderboard_info
+  puts "🏅 User Leaderboard:"
+  leaderboard.leaderboard_info.user_info.each do |user|
+    puts "  #{user.rank}. #{user.name} - #{user.award_count} awards"
+  end
+  puts ""
+  
+  puts "🏆 Team Leaderboard:"
+  leaderboard.leaderboard_info.team_info.each do |team|
+    puts "  #{team.rank}. #{team.name} - #{team.award_count} awards"
+  end
+else
+  puts "📊 No leaderboard data configured"
 end
 ```
 
@@ -444,6 +538,7 @@ See [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) for detailed guidelines.
 
 - ✅ **Learn Module**: Course catalog, categories, and my learning
 - ✅ **Users Module**: User profile and authentication
+- ✅ **Recognitions Module**: Award categories, core value tags, and leaderboard info
 - ✅ **Error Handling**: Comprehensive error logging and testing
 - ✅ **OAuth Flow**: Token management and refresh
 

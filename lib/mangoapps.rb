@@ -8,9 +8,11 @@ require_relative "mangoapps/response"
 require_relative "mangoapps/client"
 require_relative "mangoapps/modules/learn"
 require_relative "mangoapps/modules/users"
+require_relative "mangoapps/modules/recognitions"
 
 module MangoApps; end
 
 # Mix in the resources
 MangoApps::Client.include(MangoApps::Client::Learn)
 MangoApps::Client.include(MangoApps::Client::Users)
+MangoApps::Client.include(MangoApps::Client::Recognitions)

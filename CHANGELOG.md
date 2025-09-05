@@ -5,6 +5,38 @@ All notable changes to the MangoApps Ruby SDK will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.3] - 2024-12-19
+
+### Added
+- **Gift Cards API** in Recognitions Module
+  - `client.gift_cards` - Get available gift cards for recognition rewards
+  - Access to gift card brands, descriptions, and availability status
+  - Clean dot notation access: `response.cards` with `brand_name`, `brand_key`, `description`, and `enabled` fields
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for gift cards API (5 total recognitions tests)
+- **Documentation** - Updated README with gift cards examples and complete recognition management workflow
+- **API Completeness** - Recognitions module now includes 5 comprehensive endpoints
+
+## [0.2.2] - 2024-12-19
+
+### Added
+- **Tango Gift Cards API** in Recognitions Module
+  - `client.tango_gift_cards` - Get tango gift cards information and available points
+  - Access to gift card terms and available points for recognition rewards
+  - Clean dot notation access: `response.tango_cards.available_points` and `response.tango_cards.terms`
+- **Enhanced Test Runner** with module-specific testing
+  - `./run_tests.sh [module]` - Run tests for specific modules (learn, users, recognitions)
+  - `./run_tests.sh all` - Run all tests (default behavior)
+  - `./run_tests.sh help` - Show usage help and available modules
+  - Improved error handling and user-friendly output
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for tango gift cards API
+- **Documentation** - Updated README with tango gift cards examples and new test runner usage
+- **Developer Experience** - Faster development with module-specific testing capabilities
+
 ## [0.2.1] - 2024-12-19
 
 ### Added

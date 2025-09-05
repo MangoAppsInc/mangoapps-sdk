@@ -125,4 +125,56 @@ RSpec.describe "MangoApps Recognitions Module" do
       end
     end
   end
+
+  describe "Tango Gift Cards" do
+    it "gets tango gift cards from actual MangoApps API" do
+      puts "\n🎁 Testing Recognitions API - Tango Gift Cards..."
+      
+      response = client.tango_gift_cards
+      
+      expect(response).to be_a(MangoApps::Response) # Recognitions API returns wrapped response
+      expect(response).to respond_to(:tango_cards)
+      puts "✅ Tango gift cards API call successful!"
+      puts "📊 Response contains tango gift cards data"
+      
+      # Validate the tango gift card structure using dot notation
+      if response.tango_cards
+        expect(response.tango_cards).to respond_to(:available_points)
+        expect(response.tango_cards).to respond_to(:terms)
+        puts "✅ Tango gift cards structure validated"
+        puts "📊 Available points: #{response.tango_cards.available_points}"
+        puts "🎁 Terms: #{response.tango_cards.terms[0..100]}..." if response.tango_cards.terms
+      else
+        puts "📊 Tango gift cards data is nil"
+      end
+    end
+  end
+
+  describe "Gift Cards" do
+    it "gets gift cards from actual MangoApps API" do
+      puts "\n🎁 Testing Recognitions API - Gift Cards..."
+      
+      response = client.gift_cards
+      
+      expect(response).to be_a(MangoApps::Response) # Recognitions API returns wrapped response
+      expect(response).to respond_to(:cards)
+      expect(response.cards).to be_an(Array)
+      puts "✅ Gift cards API call successful!"
+      puts "📊 Response contains gift cards data"
+      
+      # Validate the gift card structure using dot notation
+      if response.cards.any?
+        gift_card = response.cards.first
+        expect(gift_card).to respond_to(:brand_key)
+        expect(gift_card).to respond_to(:brand_name)
+        expect(gift_card).to respond_to(:description)
+        expect(gift_card).to respond_to(:enabled)
+        puts "✅ Gift cards structure validated"
+        puts "📊 Found #{response.cards.length} gift cards"
+        puts "🎁 Sample gift card: #{gift_card.brand_name} (Key: #{gift_card.brand_key}) - Enabled: #{gift_card.enabled}"
+      else
+        puts "📊 Gift cards list is empty"
+      end
+    end
+  end
 end

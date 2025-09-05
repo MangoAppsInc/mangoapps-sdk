@@ -1,19 +1,44 @@
 #!/bin/bash
 
 # MangoApps SDK Test Runner
-# Runs all tests in the correct order
+# Runs tests for specific modules or all modules
 
 set -e  # Exit on any error
+
+# Function to show usage
+show_usage() {
+    echo "🧪 MangoApps SDK Test Suite"
+    echo "=========================="
+    echo ""
+    echo "📋 This test suite will:"
+    echo "   1. 🔗 Run API tests for specified module(s)"
+    echo ""
+    echo "💡 Usage:"
+    echo "   ./run_tests.sh [module]  - Run tests for specific module"
+    echo "   ./run_tests.sh all       - Run all API tests (default)"
+    echo "   ./run_auth.sh            - Get fresh OAuth token first"
+    echo ""
+    echo "📚 Available modules:"
+    echo "   learn        - Learn module tests"
+    echo "   users        - Users module tests"
+    echo "   recognitions - Recognitions module tests"
+    echo "   all          - All modules (default)"
+    echo ""
+}
+
+# Parse arguments
+MODULE=${1:-all}
+
+# Show usage if help is requested
+if [ "$MODULE" = "help" ] || [ "$MODULE" = "-h" ] || [ "$MODULE" = "--help" ]; then
+    show_usage
+    exit 0
+fi
 
 echo "🧪 MangoApps SDK Test Suite"
 echo "=========================="
 echo ""
-echo "📋 This test suite will:"
-echo "   1. 🔗 Run API tests"
-echo ""
-echo "💡 Usage:"
-echo "   ./run_tests.sh  - Run API tests (requires valid token in .env)"
-echo "   ./run_auth.sh   - Get fresh OAuth token first"
+echo "📋 Testing module: $MODULE"
 echo ""
 
 # Colors for output
@@ -84,26 +109,84 @@ echo ""
 print_status "Starting API tests..."
 echo ""
 
-# API Tests
-echo "🔗 API Tests"
-echo "============"
-print_status "Running API tests..."
-if bundle exec rspec spec/mangoapps/learn_spec.rb spec/mangoapps/users_spec.rb spec/mangoapps/recognitions_spec.rb --format documentation; then
-    print_success "API tests passed!"
+# Function to run tests for a specific module
+run_module_tests() {
+    local module_name=$1
+    local spec_file=""
+    local module_display=""
+    
+    case $module_name in
+        "learn")
+            spec_file="spec/mangoapps/learn_spec.rb"
+            module_display="📚 Learn module"
+            ;;
+        "users")
+            spec_file="spec/mangoapps/users_spec.rb"
+            module_display="👤 Users module"
+            ;;
+        "recognitions")
+            spec_file="spec/mangoapps/recognitions_spec.rb"
+            module_display="🏆 Recognitions module"
+            ;;
+        "all")
+            spec_file="spec/mangoapps/learn_spec.rb spec/mangoapps/users_spec.rb spec/mangoapps/recognitions_spec.rb"
+            module_display="🔗 All modules"
+            ;;
+        *)
+            print_error "Unknown module: $module_name"
+            echo ""
+            show_usage
+            exit 1
+            ;;
+    esac
+    
+    echo "🔗 API Tests"
+    echo "============"
+    print_status "Running $module_display tests..."
+    
+    if bundle exec rspec $spec_file --format documentation; then
+        print_success "$module_display tests passed!"
+        return 0
+    else
+        print_error "$module_display tests failed!"
+        return 1
+    fi
+}
+
+# Run tests based on module argument
+if run_module_tests "$MODULE"; then
     echo ""
-    echo "🎉 All tests completed successfully!"
-    echo "=================================="
+    echo "🎉 Tests completed successfully!"
+    echo "=============================="
     print_success "MangoApps SDK is working correctly!"
     echo ""
-    print_status "Test Summary:"
-    echo "  📚 Learn module: ✅ All endpoints tested and working"
-    echo "  👤 Users module: ✅ All endpoints tested and working"
-    echo "  🏆 Recognitions module: ✅ All endpoints tested and working"
-    echo ""
-    print_status "You can now start developing with confidence!"
-    echo "  - All API endpoints are tested and working"
-    echo "  - SDK is ready for production use"
+    
+    if [ "$MODULE" = "all" ]; then
+        print_status "Test Summary:"
+        echo "  📚 Learn module: ✅ All endpoints tested and working"
+        echo "  👤 Users module: ✅ All endpoints tested and working"
+        echo "  🏆 Recognitions module: ✅ All endpoints tested and working"
+        echo ""
+        print_status "You can now start developing with confidence!"
+        echo "  - All API endpoints are tested and working"
+        echo "  - SDK is ready for production use"
+    else
+        print_status "Module Summary:"
+        case $MODULE in
+            "learn")
+                echo "  📚 Learn module: ✅ All endpoints tested and working"
+                ;;
+            "users")
+                echo "  👤 Users module: ✅ All endpoints tested and working"
+                ;;
+            "recognitions")
+                echo "  🏆 Recognitions module: ✅ All endpoints tested and working"
+                ;;
+        esac
+        echo ""
+        print_status "You can now start developing with confidence!"
+        echo "  - $MODULE module endpoints are tested and working"
+    fi
 else
-    print_error "API tests failed!"
     exit 1
 fi

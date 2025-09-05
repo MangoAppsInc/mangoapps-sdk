@@ -260,6 +260,27 @@ else
 end
 ```
 
+#### Tango Gift Cards
+```ruby
+# Get tango gift cards information
+gift_cards = client.tango_gift_cards
+
+# Access gift card data with clean dot notation
+puts "Available points: #{gift_cards.tango_cards.available_points}"
+puts "Terms: #{gift_cards.tango_cards.terms}"
+```
+
+#### Gift Cards
+```ruby
+# Get gift cards information
+gift_cards = client.gift_cards
+
+# Access gift card data with clean dot notation
+gift_cards.cards.each do |card|
+  puts "#{card.brand_name} (Key: #{card.brand_key}) - Enabled: #{card.enabled}"
+end
+```
+
 ## Available Modules
 
 ### ✅ Currently Implemented
@@ -277,6 +298,8 @@ end
 - **Award Categories**: `client.award_categories` - Get recognition award categories
 - **Core Value Tags**: `client.core_value_tags` - Get core value tags for recognition
 - **Leaderboard Info**: `client.leaderboard_info` - Get user and team leaderboard information
+- **Tango Gift Cards**: `client.tango_gift_cards` - Get tango gift cards information and available points
+- **Gift Cards**: `client.gift_cards` - Get available gift cards for recognition rewards
 
 ## Complete Examples
 
@@ -402,6 +425,24 @@ if leaderboard.leaderboard_info
 else
   puts "📊 No leaderboard data configured"
 end
+
+# Get tango gift cards information
+tango_gift_cards = client.tango_gift_cards
+
+# Display tango gift card information
+puts "🎁 Tango Gift Cards:"
+puts "  Available points: #{tango_gift_cards.tango_cards.available_points}"
+puts "  Terms: #{tango_gift_cards.tango_cards.terms[0..100]}..." if tango_gift_cards.tango_cards.terms
+puts ""
+
+# Get gift cards information
+gift_cards = client.gift_cards
+
+# Display available gift cards
+puts "🎁 Available Gift Cards:"
+gift_cards.cards.each do |card|
+  puts "  • #{card.brand_name} (Key: #{card.brand_key}) - Enabled: #{card.enabled}"
+end
 ```
 
 ### Error Handling with Clean Responses
@@ -496,8 +537,17 @@ This SDK uses **real TDD** - no mocking, only actual OAuth testing with separate
 
 #### API Testing (Fast Development)
 ```bash
-# Run API tests (requires valid token in .env)
+# Run all API tests (requires valid token in .env)
 ./run_tests.sh
+./run_tests.sh all
+
+# Run specific module tests
+./run_tests.sh learn
+./run_tests.sh users
+./run_tests.sh recognitions
+
+# Show help
+./run_tests.sh help
 ```
 
 #### Interactive API Testing
@@ -514,6 +564,7 @@ bundle exec rspec spec/mangoapps/ --format documentation
 # Run specific module tests
 bundle exec rspec spec/mangoapps/learn_spec.rb --format documentation
 bundle exec rspec spec/mangoapps/users_spec.rb --format documentation
+bundle exec rspec spec/mangoapps/recognitions_spec.rb --format documentation
 ```
 
 #### Test Response Format
@@ -583,9 +634,10 @@ See [MODULES.md](MODULES.md) for detailed guidelines.
 
 - ✅ **Learn Module**: Course catalog, categories, course details, and my learning
 - ✅ **Users Module**: User profile and authentication
-- ✅ **Recognitions Module**: Award categories, core value tags, and leaderboard info
+- ✅ **Recognitions Module**: Award categories, core value tags, leaderboard info, tango gift cards, and gift cards
 - ✅ **Error Handling**: Comprehensive error logging and testing
 - ✅ **OAuth Flow**: Token management and refresh
+- ✅ **Test Runner**: Module-specific testing with flexible command-line options
 
 ## Contributing
 

@@ -164,6 +164,29 @@ end
 category = client.course_category(category_id)
 ```
 
+#### My Learning
+```ruby
+# Get user's learning progress and courses
+learning = client.my_learning
+
+# Access user learning data with clean dot notation
+puts "User: #{learning.user_name} (ID: #{learning.user_id})"
+puts "Total training time: #{learning.total_training_time}"
+puts "Ongoing courses: #{learning.ongoing_course_count}"
+puts "Completed courses: #{learning.completed_course_count}"
+puts "Registered courses: #{learning.registered_course_count}"
+
+# Access learning sections
+learning.section.each do |section|
+  puts "#{section.label} - #{section.count} courses"
+  
+  # Access courses in each section
+  section.courses.each do |course|
+    puts "  📚 #{course.name} - #{course.course_progress}% progress"
+  end
+end
+```
+
 ## Available Modules
 
 ### ✅ Currently Implemented
@@ -174,6 +197,7 @@ category = client.course_category(category_id)
 #### Learn Module  
 - **Course Catalog**: `client.course_catalog` - Get available courses
 - **Course Categories**: `client.course_categories` - Get course categories
+- **My Learning**: `client.my_learning` - Get user's learning progress and courses
 
 ## Complete Examples
 
@@ -223,6 +247,28 @@ categories.all_categories.each do |category|
   puts "   Position: #{category.position}"
   puts "   Icon: #{category.icon_properties}"
   puts ""
+end
+
+# Get user's learning progress
+learning = client.my_learning
+
+# Display learning summary
+puts "🎓 Learning Summary for #{learning.user_name}"
+puts "⏱️ Total training time: #{learning.total_training_time}"
+puts "📚 Ongoing: #{learning.ongoing_course_count} | ✅ Completed: #{learning.completed_course_count} | 📝 Registered: #{learning.registered_course_count}"
+puts ""
+
+# Browse learning sections
+learning.section.each do |section|
+  puts "📂 #{section.label} (#{section.count} courses)"
+  
+  section.courses.each do |course|
+    puts "  📚 #{course.name}"
+    puts "     Progress: #{course.course_progress}%"
+    puts "     Type: #{course.course_type}"
+    puts "     URL: #{course.start_course_url}"
+    puts ""
+  end
 end
 ```
 
@@ -396,7 +442,7 @@ See [MODULE_DEVELOPMENT.md](MODULE_DEVELOPMENT.md) for detailed guidelines.
 
 ### Current Test Coverage
 
-- ✅ **Learn Module**: Course catalog and categories
+- ✅ **Learn Module**: Course catalog, categories, and my learning
 - ✅ **Users Module**: User profile and authentication
 - ✅ **Error Handling**: Comprehensive error logging and testing
 - ✅ **OAuth Flow**: Token management and refresh

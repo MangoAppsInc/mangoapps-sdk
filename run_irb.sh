@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# MangoApps SDK Interactive Testing Shell Script
-# Usage: ./test_interactive.sh
+# MangoApps SDK Interactive Ruby Shell (IRB)
+# Usage: ./run_irb.sh
 
 set -e  # Exit on any error
 
-echo "🚀 MangoApps SDK Interactive Testing"
-echo "===================================="
+echo "🚀 MangoApps SDK Interactive Ruby Shell (IRB)"
+echo "============================================="
 echo ""
 
 # Colors for output
@@ -74,16 +74,23 @@ fi
 print_success "Valid OAuth token found!"
 
 echo ""
-print_success "Ready to test APIs!"
-echo "===================================="
+print_success "Ready for interactive API testing!"
+echo "=========================================="
 echo ""
-echo "Initualize client:"
+echo "Initialize client:"
 echo "config = MangoApps::Config.new"
 echo "client = MangoApps::Client.new(config)"
 echo ""
-echo "===================================="
+echo "Example API calls:"
+echo "client.me                    # Get user profile"
+echo "client.course_catalog        # Get courses"
+echo "client.award_categories      # Get award categories"
+echo "client.core_value_tags       # Get core value tags"
+echo "client.leaderboard_info      # Get leaderboard"
+echo "client.my_learning           # Get learning progress"
 echo ""
-echo "📊 Domain: $DOMAIN"
+echo "=========================================="
+echo ""
 echo "🔑 Token: Valid"
 echo ""
 

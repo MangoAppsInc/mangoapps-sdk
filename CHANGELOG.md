@@ -5,6 +5,29 @@ All notable changes to the MangoApps Ruby SDK will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2024-12-19
+
+### Added
+- **Recognitions Module** with comprehensive recognition management APIs
+  - `client.award_categories` - Get recognition award categories
+  - `client.core_value_tags` - Get core value tags for recognition
+  - `client.leaderboard_info` - Get user and team leaderboard information
+- **Enhanced Learn Module** with user learning progress tracking
+  - `client.my_learning` - Get user's learning progress and course information
+- **Improved Response API** with clean dot notation access for all endpoints
+- **Robust Error Handling** for APIs that may return empty data (e.g., leaderboard)
+
+### Enhanced
+- **Modular Architecture** - Recognitions module uses folder structure like Learn module
+- **Comprehensive Testing** - All new APIs tested with real OAuth integration
+- **Documentation** - Complete README examples for all recognition features
+- **Test Coverage** - 7 comprehensive API tests covering all modules
+
+### Technical Improvements
+- **Folder Structure** - Recognitions module organized with sub-modules for scalability
+- **Error Resilience** - Tests handle both populated and empty API responses gracefully
+- **Clean API Design** - Consistent method naming and response handling across all modules
+
 ## [0.1.0] - 2024-12-19
 
 ### Added

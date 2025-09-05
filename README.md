@@ -462,6 +462,12 @@ This SDK uses **real TDD** - no mocking, only actual OAuth testing with separate
 ./run_tests.sh
 ```
 
+#### Interactive API Testing
+```bash
+# Start interactive Ruby shell with SDK loaded
+./run_irb.sh
+```
+
 #### Manual Testing
 ```bash
 # Run all tests with clean response validation
@@ -488,7 +494,8 @@ expect(user_profile).to respond_to(:minimal_profile)
 
 1. **First time**: `./run_auth.sh` (get OAuth token)
 2. **Development**: `./run_tests.sh` (run tests quickly)
-3. **Token expires**: `./run_auth.sh` (get fresh token)
+3. **Interactive testing**: `./run_irb.sh` (test APIs interactively)
+4. **Token expires**: `./run_auth.sh` (get fresh token)
 
 #### Benefits of Separated Workflow
 

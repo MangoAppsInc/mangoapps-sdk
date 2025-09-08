@@ -19,10 +19,14 @@ show_usage() {
     echo "   ./run_auth.sh            - Get fresh OAuth token first"
     echo ""
     echo "📚 Available modules:"
-    echo "   learn        - Learn module tests"
-    echo "   users        - Users module tests"
-    echo "   recognitions - Recognitions module tests"
-    echo "   all          - All modules (default)"
+    echo "   learn         - Learn module tests"
+    echo "   users         - Users module tests"
+    echo "   recognitions  - Recognitions module tests"
+    echo "   notifications - Notifications module tests"
+    echo "   feeds         - Feeds module tests"
+    echo "   posts         - Posts module tests"
+    echo "   libraries     - Libraries module tests"
+    echo "   all           - All modules (default)"
     echo ""
 }
 
@@ -128,8 +132,24 @@ run_module_tests() {
             spec_file="spec/mangoapps/recognitions_spec.rb"
             module_display="🏆 Recognitions module"
             ;;
+        "notifications")
+            spec_file="spec/mangoapps/notifications_spec.rb"
+            module_display="🔔 Notifications module"
+            ;;
+        "feeds")
+            spec_file="spec/mangoapps/feeds_spec.rb"
+            module_display="📰 Feeds module"
+            ;;
+        "posts")
+            spec_file="spec/mangoapps/posts_spec.rb"
+            module_display="📝 Posts module"
+            ;;
+        "libraries")
+            spec_file="spec/mangoapps/libraries_spec.rb"
+            module_display="📚 Libraries module"
+            ;;
         "all")
-            spec_file="spec/mangoapps/learn_spec.rb spec/mangoapps/users_spec.rb spec/mangoapps/recognitions_spec.rb"
+            spec_file="spec/mangoapps/learn_spec.rb spec/mangoapps/users_spec.rb spec/mangoapps/recognitions_spec.rb spec/mangoapps/notifications_spec.rb spec/mangoapps/feeds_spec.rb spec/mangoapps/posts_spec.rb spec/mangoapps/libraries_spec.rb"
             module_display="🔗 All modules"
             ;;
         *)
@@ -166,6 +186,10 @@ if run_module_tests "$MODULE"; then
         echo "  📚 Learn module: ✅ All endpoints tested and working"
         echo "  👤 Users module: ✅ All endpoints tested and working"
         echo "  🏆 Recognitions module: ✅ All endpoints tested and working"
+        echo "  🔔 Notifications module: ✅ All endpoints tested and working"
+        echo "  📰 Feeds module: ✅ All endpoints tested and working"
+        echo "  📝 Posts module: ✅ All endpoints tested and working"
+        echo "  📚 Libraries module: ✅ All endpoints tested and working"
         echo ""
         print_status "You can now start developing with confidence!"
         echo "  - All API endpoints are tested and working"
@@ -181,6 +205,18 @@ if run_module_tests "$MODULE"; then
                 ;;
             "recognitions")
                 echo "  🏆 Recognitions module: ✅ All endpoints tested and working"
+                ;;
+            "notifications")
+                echo "  🔔 Notifications module: ✅ All endpoints tested and working"
+                ;;
+            "feeds")
+                echo "  📰 Feeds module: ✅ All endpoints tested and working"
+                ;;
+            "posts")
+                echo "  📝 Posts module: ✅ All endpoints tested and working"
+                ;;
+            "libraries")
+                echo "  📚 Libraries module: ✅ All endpoints tested and working"
                 ;;
         esac
         echo ""

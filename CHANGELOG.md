@@ -5,6 +5,81 @@ All notable changes to the MangoApps Ruby SDK will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2024-12-19
+
+### Added
+- **Libraries Module** - New module for document library management
+  - `client.get_libraries` - Get user's document libraries with categories and items
+  - Access to library data including names, types, view modes, descriptions, edit access, and positions
+  - Access to library categories with item counts, ranks, and system flags
+  - Clean dot notation access: `response.libraries` with comprehensive library data
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for libraries module (1 total libraries test)
+- **Documentation** - Updated README with libraries examples and complete workflow
+- **Module Architecture** - Added new libraries module following established patterns
+- **Test Runner** - Updated run_tests.sh to include libraries module testing
+
+## [0.2.9] - 2024-12-19
+
+### Added
+- **Get Post By ID API** in Posts Module
+  - `client.get_post_by_id(post_id, full_description: "Y")` - Get detailed post information by ID
+  - Access to comprehensive post details including creator info, permissions, tiles, and full descriptions
+  - Clean dot notation access: `response.post` with detailed post data and metadata
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for get post by ID API (2 total posts tests)
+- **Documentation** - Updated README with get post by ID examples and complete workflow
+- **API Completeness** - Posts module now includes 2 comprehensive endpoints for complete post management
+
+## [0.2.8] - 2024-12-19
+
+### Added
+- **Posts Module** - New module for post management
+  - `client.get_all_posts(filter_by: "all")` - Get all posts with filtering options
+  - Access to post data including titles, authors, groups, view counts, comments, and tiles
+  - Clean dot notation access: `response.feeds`, `response.post_view_count_visibility`, and `response.post_view_count_link_config`
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for posts module (1 total posts test)
+- **Documentation** - Updated README with posts examples and complete workflow
+- **Module Architecture** - Added new posts module following established patterns
+- **Test Runner** - Updated run_tests.sh to include posts module testing
+
+## [0.2.7] - 2024-12-19
+
+### Added
+- **Feeds Module** - New module for user activity feeds
+  - `client.feeds` - Get user's activity feeds with unread counts and feed details
+  - Access to feed data including titles, authors, groups, timestamps, and content
+  - Clean dot notation access: `response.feeds`, `response.unread_counts`, and `response.limit`
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for feeds module (1 total feeds test)
+- **Documentation** - Updated README with feeds examples and complete workflow
+- **Module Architecture** - Added new feeds module following established patterns
+- **Test Runner** - Updated run_tests.sh to include feeds module testing
+
+## [0.2.6] - 2024-12-19
+
+### Added
+- **Notifications Module** - New module for user notifications and priority items
+  - `client.my_priority_items` - Get user's priority items including requests, events, quizzes, surveys, tasks, and todos
+  - Access to priority item details with counts, action types, icons, and descriptions
+  - Clean dot notation access: `response.data`, `response.success`, and `response.display_type`
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for notifications module (1 total notifications test)
+- **Documentation** - Updated README with notifications examples and complete workflow
+- **Module Architecture** - Added new notifications module following established patterns
+- **Test Runner** - Updated run_tests.sh to include notifications module testing
+
 ## [0.2.5] - 2024-12-19
 
 ### Added

@@ -13,6 +13,9 @@ A clean, **real TDD** Ruby SDK for MangoApps APIs with OAuth2/OpenID Connect aut
 - 🔧 **Environment variable configuration** for secure credentials
 - 📚 **Well-documented** with examples and guides
 - ✨ **Clean Response API** - Automatic response wrapping with intuitive dot notation access
+- 🔔 **Notifications Module** - User priority items including requests, events, quizzes, surveys, tasks, and todos
+- 📰 **Feeds Module** - User activity feeds with unread counts and feed details
+- 📝 **Posts Module** - Get all posts with filtering options and post management
 
 ## Installation
 
@@ -80,6 +83,48 @@ client = MangoApps::Client.new(config)
 
 # Run tests to verify everything works
 ./run_tests.sh
+```
+
+#### Basic Usage Example
+```ruby
+require 'mangoapps-sdk'
+
+# Initialize client
+client = MangoApps::Client.new
+
+# Get user profile
+user = client.me
+puts "Hello, #{user.name}!"
+
+# Get priority items
+priority_items = client.my_priority_items
+puts "You have #{priority_items.data.length} priority items:"
+priority_items.data.each do |item|
+  puts "  • #{item.title}: #{item.count} pending"
+end
+
+# Get available courses
+courses = client.course_catalog
+puts "Available courses: #{courses.courses.length}"
+
+# Get activity feeds
+feeds = client.feeds
+puts "Activity feeds: #{feeds.feeds.length} (unread: #{feeds.unread_counts.unread_feeds_count})"
+
+# Get all posts
+posts = client.get_all_posts(filter_by: "all")
+puts "All posts: #{posts.feeds.length}"
+
+# Get post details by ID
+if posts.feeds.any?
+  post_id = posts.feeds.first.post_id
+  post_details = client.get_post_by_id(post_id, full_description: "Y")
+  puts "Post details: #{post_details.post.title}"
+end
+
+# Get user libraries
+libraries = client.get_libraries
+puts "User libraries: #{libraries.libraries.length}"
 ```
 
 #### Manual OAuth Flow
@@ -333,6 +378,119 @@ response.feeds.each do |feed|
 end
 ```
 
+#### My Priority Items
+```ruby
+# Get user's priority items
+response = client.my_priority_items
+
+# Access priority items data
+response.data.each do |item|
+  puts "#{item.title} (ID: #{item.id}) - Count: #{item.count}"
+  puts "  Action Type: #{item.action_type}"
+  puts "  Icon: #{item.icon} (#{item.icon_color})"
+  puts "  Details: #{item.info_details}"
+end
+
+# Check response status
+puts "Success: #{response.success}"
+puts "Display Type: #{response.display_type}"
+```
+
+#### Feeds
+```ruby
+# Get user's activity feeds
+response = client.feeds
+
+# Access feeds data
+response.feeds.each do |feed|
+  puts "#{feed.feed_property.title} (ID: #{feed.id})"
+  puts "  From: #{feed.from_user.name} | Group: #{feed.group_name}"
+  puts "  Type: #{feed.feed_type} | Category: #{feed.category}"
+  puts "  Created: #{Time.at(feed.created_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+  puts "  Unread: #{feed.unread}"
+  puts "  Body: #{feed.body[0..100]}..."
+end
+
+# Access unread counts
+puts "Unread feeds: #{response.unread_counts.unread_feeds_count}"
+puts "Direct messages: #{response.unread_counts.direct_messages_count}"
+puts "What's new: #{response.unread_counts.whats_new_count}"
+
+# Check response metadata
+puts "Limit: #{response.limit} | Version: #{response.mangoapps_version}"
+```
+
+#### Get All Posts
+```ruby
+# Get all posts with filtering
+response = client.get_all_posts(filter_by: "all")
+
+# Access posts data
+response.feeds.each do |post|
+  puts "#{post.tile.tile_name} (ID: #{post.id})"
+  puts "  From: #{post.from_user.name} | Group: #{post.group_name}"
+  puts "  Post ID: #{post.post_id} | View count: #{post.total_view_count}"
+  puts "  Created: #{Time.at(post.created_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+  puts "  Comments: #{post.comments.length} | Likes: #{post.like_count}"
+  puts "  Content: #{post.tile.tile_content[0..100]}..."
+end
+
+# Access post configuration
+puts "Post view count visibility: #{response.post_view_count_visibility}"
+puts "Post view count link config: #{response.post_view_count_link_config}"
+```
+
+#### Get Post By ID
+```ruby
+# Get detailed post information by ID
+post_id = 59101
+response = client.get_post_by_id(post_id, full_description: "Y")
+
+# Access post details
+post = response.post
+puts "#{post.title} (ID: #{post.id})"
+puts "  Created by: #{post.created_name} (ID: #{post.creator_by})"
+puts "  Created: #{Time.at(post.created_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+puts "  Conversation: #{post.conversation_name}"
+puts "  View count: #{post.total_view_count} | Likes: #{post.like_count} | Comments: #{post.comment_count}"
+
+# Access tile information
+if post.tile
+  puts "  Tile: #{post.tile.tile_name}"
+  puts "  Full description: #{post.tile.tile_full_description[0..200]}..."
+  puts "  Image: #{post.tile.tile_image}"
+end
+
+# Check post permissions
+puts "  Can edit: #{post.can_edit} | Can comment: #{post.can_comment} | Can delete: #{post.can_delete}"
+puts "  Is draft: #{post.is_draft} | Archived: #{post.archived}"
+```
+
+#### Libraries Management
+```ruby
+# Get user's document libraries
+libraries = client.get_libraries
+
+# Access libraries data
+puts "📚 User Libraries:"
+libraries.libraries.each do |library|
+  puts "  • #{library.name} (ID: #{library.id})"
+  puts "    Type: #{library.library_type} | View: #{library.view_mode}"
+  puts "    Items: #{library.total_items_count} | Categories: #{library.categories.length}"
+  puts "    Edit access: #{library.edit_access} | Position: #{library.position}"
+  puts "    Banner: #{library.banner_color} | Icon: #{library.icon_properties.color}"
+  
+  # Access library categories
+  if library.categories.any?
+    puts "    Categories:"
+    library.categories.first(3).each do |category|
+      puts "      - #{category.name} (#{category.library_items_count} items)"
+    end
+  end
+  puts ""
+end
+```
+
 ## Available Modules
 
 ### ✅ Currently Implemented
@@ -356,7 +514,62 @@ end
 - **Tango Gift Cards**: `client.tango_gift_cards` - Get tango gift cards information and available points
 - **Gift Cards**: `client.gift_cards` - Get available gift cards for recognition rewards
 
+#### Notifications Module
+- **My Priority Items**: `client.my_priority_items` - Get user's priority items including requests, events, quizzes, surveys, tasks, and todos
+
+#### Feeds Module
+- **Feeds**: `client.feeds` - Get user's activity feeds with unread counts and feed details
+
+#### Posts Module
+- **Get All Posts**: `client.get_all_posts(filter_by: "all")` - Get all posts with filtering options
+- **Get Post By ID**: `client.get_post_by_id(post_id, full_description: "Y")` - Get detailed post information by ID
+
+#### Libraries Module
+- **Get Libraries**: `client.get_libraries` - Get user's document libraries with categories and items
+
 ## Complete Examples
+
+### Notifications Management
+```ruby
+require 'mangoapps-sdk'
+
+# Initialize client
+client = MangoApps::Client.new
+
+# Get user's priority items
+priority_items = client.my_priority_items
+
+# Display all priority items with details
+puts "🔔 User Priority Items Dashboard"
+puts "================================"
+puts "Success: #{priority_items.success}"
+puts "Display Type: #{priority_items.display_type}"
+puts ""
+
+priority_items.data.each do |item|
+  puts "📋 #{item.title} (ID: #{item.id})"
+  puts "   Count: #{item.count} pending items"
+  puts "   Action Type: #{item.action_type}"
+  puts "   Icon: #{item.icon} (#{item.icon_color})"
+  puts "   Background: #{item.icon_bg_color}"
+  puts "   Description: #{item.info_details.gsub(/<[^>]*>/, '').strip[0..100]}..."
+  puts ""
+end
+
+# Filter by specific action types
+approval_items = priority_items.data.select { |item| item.action_type == 'approval' }
+puts "🔍 Approval Items: #{approval_items.length}"
+approval_items.each do |item|
+  puts "  • #{item.title}: #{item.count} items"
+end
+
+# Get high-priority items (count > 5)
+high_priority = priority_items.data.select { |item| item.count > 5 }
+puts "⚠️  High Priority Items: #{high_priority.length}"
+high_priority.each do |item|
+  puts "  • #{item.title}: #{item.count} items"
+end
+```
 
 ### User Profile Management
 ```ruby
@@ -494,6 +707,85 @@ puts "  Team Recent Awards:"
 team_awards.feeds.each do |feed|
   puts "    • #{feed.feed_property.title} - Points: #{feed.recognition_points}"
   puts "      From: #{feed.from_user.name} | Team: #{feed.group_name}"
+end
+puts ""
+
+# Get user priority items
+priority_items = client.my_priority_items
+
+# Display priority items
+puts "🔔 User Priority Items:"
+priority_items.data.each do |item|
+  puts "  • #{item.title} (ID: #{item.id}) - Count: #{item.count}"
+  puts "    Action Type: #{item.action_type} | Icon: #{item.icon}"
+end
+puts ""
+
+# Get user activity feeds
+feeds = client.feeds
+
+# Display feeds
+puts "📰 User Activity Feeds:"
+puts "  Total feeds: #{feeds.feeds.length}"
+puts "  Unread feeds: #{feeds.unread_counts.unread_feeds_count}"
+puts "  Direct messages: #{feeds.unread_counts.direct_messages_count}"
+puts "  What's new: #{feeds.unread_counts.whats_new_count}"
+puts ""
+
+# Display recent feeds
+puts "📰 Recent Feeds:"
+feeds.feeds.first(3).each do |feed|
+  puts "  • #{feed.feed_property.title} (ID: #{feed.id})"
+  puts "    From: #{feed.from_user.name} | Group: #{feed.group_name}"
+  puts "    Type: #{feed.feed_type} | Unread: #{feed.unread}"
+end
+puts ""
+
+# Get all posts
+posts = client.get_all_posts(filter_by: "all")
+
+# Display posts
+puts "📝 All Posts:"
+puts "  Total posts: #{posts.feeds.length}"
+puts "  Post view count visibility: #{posts.post_view_count_visibility}"
+puts ""
+
+# Display recent posts
+puts "📝 Recent Posts:"
+posts.feeds.first(3).each do |post|
+  puts "  • #{post.tile.tile_name} (ID: #{post.id})"
+  puts "    From: #{post.from_user.name} | Group: #{post.group_name}"
+  puts "    Views: #{post.total_view_count} | Comments: #{post.comments.length}"
+end
+puts ""
+
+# Get detailed post information
+if posts.feeds.any?
+  first_post_id = posts.feeds.first.post_id
+  post_details = client.get_post_by_id(first_post_id, full_description: "Y")
+  
+  puts "📝 Post Details (ID: #{first_post_id}):"
+  puts "  Title: #{post_details.post.title}"
+  puts "  Created by: #{post_details.post.created_name}"
+  puts "  View count: #{post_details.post.total_view_count}"
+  puts "  Can edit: #{post_details.post.can_edit} | Can comment: #{post_details.post.can_comment}"
+  puts "  Full description available: #{post_details.post.tile.tile_full_description.length > 0 ? 'Yes' : 'No'}"
+end
+puts ""
+
+# Get user libraries
+libraries = client.get_libraries
+
+puts "📚 User Libraries:"
+puts "  Total libraries: #{libraries.libraries.length}"
+puts ""
+
+# Display recent libraries
+puts "📚 Recent Libraries:"
+libraries.libraries.first(3).each do |library|
+  puts "  • #{library.name} (ID: #{library.id})"
+  puts "    Type: #{library.library_type} | Items: #{library.total_items_count}"
+  puts "    Categories: #{library.categories.length} | Edit access: #{library.edit_access}"
 end
 puts ""
 
@@ -661,8 +953,11 @@ This SDK uses **real TDD** - no mocking, only actual OAuth testing:
 
 # Run specific module tests
 ./run_tests.sh learn
-./run_tests.sh users
+./run_tests.sh users  
 ./run_tests.sh recognitions
+./run_tests.sh notifications
+./run_tests.sh feeds
+./run_tests.sh posts
 
 # Interactive testing
 ./run_irb.sh
@@ -670,11 +965,17 @@ This SDK uses **real TDD** - no mocking, only actual OAuth testing:
 
 ### Current API Coverage
 
-- ✅ **Learn Module**: Course catalog, categories, course details, and my learning
-- ✅ **Users Module**: User profile and authentication  
-- ✅ **Recognitions Module**: Award categories, get awards list, get profile awards, get team awards, core value tags, leaderboard info, tango gift cards, and gift cards
+- ✅ **Learn Module**: Course catalog, categories, course details, and my learning (4 endpoints)
+- ✅ **Users Module**: User profile and authentication (1 endpoint)
+- ✅ **Recognitions Module**: Award categories, get awards list, get profile awards, get team awards, core value tags, leaderboard info, tango gift cards, and gift cards (8 endpoints)
+- ✅ **Notifications Module**: My priority items for requests, events, quizzes, surveys, tasks, and todos (1 endpoint)
+- ✅ **Feeds Module**: User activity feeds with unread counts and feed details (1 endpoint)
+- ✅ **Posts Module**: Get all posts with filtering options and get post by ID (2 endpoints)
+- ✅ **Libraries Module**: Get user's document libraries with categories and items (1 endpoint)
 - ✅ **Error Handling**: Comprehensive error logging and testing
 - ✅ **OAuth Flow**: Token management and refresh
+
+**Total: 18 API endpoints across 7 modules**
 
 ## Contributing
 

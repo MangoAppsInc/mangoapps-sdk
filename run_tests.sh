@@ -28,6 +28,7 @@ show_usage() {
     echo "   libraries     - Libraries module tests"
     echo "   trackers      - Trackers module tests"
     echo "   attachments   - Attachments module tests"
+    echo "   tasks         - Tasks module tests"
     echo "   all           - All modules (default)"
     echo ""
 }
@@ -158,8 +159,12 @@ run_module_tests() {
             spec_file="spec/mangoapps/attachments_spec.rb"
             module_display="📁 Attachments module"
             ;;
+        "tasks")
+            spec_file="spec/mangoapps/tasks_spec.rb"
+            module_display="📋 Tasks module"
+            ;;
         "all")
-            spec_file="spec/mangoapps/learn_spec.rb spec/mangoapps/users_spec.rb spec/mangoapps/recognitions_spec.rb spec/mangoapps/notifications_spec.rb spec/mangoapps/feeds_spec.rb spec/mangoapps/posts_spec.rb spec/mangoapps/libraries_spec.rb spec/mangoapps/trackers_spec.rb spec/mangoapps/attachments_spec.rb"
+            spec_file="spec/mangoapps/learn_spec.rb spec/mangoapps/users_spec.rb spec/mangoapps/recognitions_spec.rb spec/mangoapps/notifications_spec.rb spec/mangoapps/feeds_spec.rb spec/mangoapps/posts_spec.rb spec/mangoapps/libraries_spec.rb spec/mangoapps/trackers_spec.rb spec/mangoapps/attachments_spec.rb spec/mangoapps/tasks_spec.rb"
             module_display="🔗 All modules"
             ;;
         *)
@@ -202,6 +207,7 @@ if run_module_tests "$MODULE"; then
         echo "  📚 Libraries module: ✅ All endpoints tested and working"
         echo "  📊 Trackers module: ✅ All endpoints tested and working"
         echo "  📁 Attachments module: ✅ All endpoints tested and working"
+        echo "  📋 Tasks module: ✅ All endpoints tested and working"
         echo ""
         print_status "You can now start developing with confidence!"
         echo "  - All API endpoints are tested and working"
@@ -235,6 +241,9 @@ if run_module_tests "$MODULE"; then
                 ;;
             "attachments")
                 echo "  📁 Attachments module: ✅ All endpoints tested and working"
+                ;;
+            "tasks")
+                echo "  📋 Tasks module: ✅ All endpoints tested and working"
                 ;;
         esac
         echo ""

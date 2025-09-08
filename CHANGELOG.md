@@ -5,6 +5,41 @@ All notable changes to the MangoApps Ruby SDK will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2024-12-19
+
+### Added
+- **Get Task Details API** in Tasks Module
+  - `client.get_task_details(task_id)` - Get detailed information for a specific task by ID
+  - Access to comprehensive task details including IDs, titles, status, assignments, and due dates
+  - Access to task properties including overdue status, milestones, projects, and priorities
+  - Access to task metadata including reviewers, next actions, attachments, and links
+  - Access to task timeline including started, finished, delivered, reopened, and restarted dates
+  - Access to task content including task description and notes
+  - Clean dot notation access: `response.task` with comprehensive task details
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for get task details API (2 total tasks tests)
+- **Documentation** - Updated README with get task details examples and complete workflow
+- **API Completeness** - Tasks module now includes 2 comprehensive endpoints for complete task management
+
+## [0.7.0] - 2024-12-19
+
+### Added
+- **Tasks Module** - New module for task management
+  - `client.get_tasks(filter: "Pending_Tasks", page: 1, limit: 5)` - Get user's tasks with filtering, pagination, and detailed task information
+  - Access to comprehensive task data including IDs, titles, status, assignments, and due dates
+  - Access to task properties including overdue status, milestones, projects, and priorities
+  - Access to task metadata including reviewers, next actions, attachments, and links
+  - Clean dot notation access: `response.tasks.task` with comprehensive task data
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for tasks module (1 total tasks test)
+- **Documentation** - Updated README with tasks examples and complete workflow
+- **Module Architecture** - Added new tasks module following established patterns
+- **Test Runner** - Updated run_tests.sh to include tasks module testing
+
 ## [0.6.0] - 2024-12-19
 
 ### Added

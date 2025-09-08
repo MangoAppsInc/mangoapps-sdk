@@ -156,6 +156,18 @@ if folders.folders.any?
     puts "Folder files: #{folder_files.files.length} items in #{folder_files.name}"
   end
 end
+
+# Get user tasks
+tasks = client.get_tasks(filter: "Pending_Tasks", page: 1, limit: 3)
+puts "User tasks: #{tasks.tasks.task.length}"
+
+# Get detailed information for a specific task
+if tasks.tasks.task.any?
+  first_task = tasks.tasks.task.first
+  task_id = first_task.is_a?(Array) ? first_task[1] : first_task.id
+  task_details = client.get_task_details(task_id)
+  puts "Task details: #{task_details.task.task_title} (Status: #{task_details.task.status})"
+end
 ```
 
 #### Manual OAuth Flow
@@ -715,6 +727,134 @@ else
 end
 ```
 
+#### Task Management
+```ruby
+# Get user's tasks with filtering and pagination
+tasks = client.get_tasks(filter: "Pending_Tasks", page: 1, limit: 5)
+
+# Access tasks data
+puts "📋 User Tasks:"
+puts "  Total tasks: #{tasks.tasks.task.length}"
+puts "  Transaction ID: #{tasks.transaction_id || 'None'}"
+puts ""
+
+# Display tasks
+puts "📋 Task List:"
+tasks.tasks.task.each do |task|
+  puts "  • #{task.task_title} (ID: #{task.id})"
+  puts "    Status: #{task.status} | Bucket: #{task.bucket}"
+  puts "    Assigned to: #{task.assigned_to_name} (ID: #{task.assigned_to})"
+  puts "    Created by: #{task.creator_name} (ID: #{task.creator_id})"
+  puts "    Created: #{Time.at(task.created_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+  puts "    Assigned: #{Time.at(task.assigned_on.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+  puts "    Due: #{task.due} | Due on: #{task.due_on ? Time.at(task.due_on.to_i).strftime('%Y-%m-%d %H:%M:%S') : 'None'}"
+  puts "    Is overdue: #{task.is_overdue} | Can be started: #{task.task_can_be_started}"
+  puts "    Milestone: #{task.milestone_name || 'None'} (ID: #{task.milestone_id || 'None'})"
+  puts "    Project: #{task.conversation_name} (ID: #{task.project_id})"
+  puts "    Visibility: #{task.visibility} | Priority: #{task.personal_priority}"
+  
+  # Show reviewers
+  if task.reviewers && task.reviewers.reviewer
+    reviewers = task.reviewers.reviewer
+    puts "    Reviewers: #{reviewers.length} reviewers"
+    reviewers.first(3).each do |reviewer|
+      puts "      - #{reviewer.user_name} (Status: #{reviewer.status})"
+    end
+  end
+  
+  # Show next actions
+  if task.next_actions && task.next_actions.action
+    actions = task.next_actions.action
+    puts "    Available actions: #{actions.join(', ')}"
+  end
+  
+  # Show links
+  if task.mlink
+    puts "    MLink: #{task.mlink[0..50]}..."
+  end
+  
+  puts ""
+end
+```
+
+#### Task Details Management
+```ruby
+# Get detailed information for a specific task
+task_details = client.get_task_details("394153")
+
+# Access task details data
+puts "📋 Task Details:"
+puts "  Task ID: #{task_details.task.id}"
+puts "  Title: #{task_details.task.task_title}"
+puts "  Status: #{task_details.task.status} | Bucket: #{task_details.task.bucket}"
+puts "  Assigned to: #{task_details.task.assigned_to_name} (ID: #{task_details.task.assigned_to})"
+puts "  Created by: #{task_details.task.creator_name} (ID: #{task_details.task.creator_id})"
+puts "  Created: #{Time.at(task_details.task.created_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+puts "  Assigned: #{Time.at(task_details.task.assigned_on.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+puts "  Due: #{task_details.task.due} | Due on: #{task_details.task.due_on ? Time.at(task_details.task.due_on.to_i).strftime('%Y-%m-%d %H:%M:%S') : 'None'}"
+puts "  Is overdue: #{task_details.task.is_overdue} | Can be started: #{task_details.task.task_can_be_started}"
+puts "  Milestone: #{task_details.task.milestone_name || 'None'} (ID: #{task_details.task.milestone_id || 'None'})"
+puts "  Project: #{task_details.task.conversation_name} (ID: #{task_details.task.project_id})"
+puts "  Visibility: #{task_details.task.visibility} | Priority: #{task_details.task.personal_priority}"
+puts "  Transaction ID: #{task_details.transaction_id || 'None'}"
+puts ""
+
+# Show task timeline
+if task_details.task.started_on
+  puts "📅 Started: #{Time.at(task_details.task.started_on.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+end
+if task_details.task.finished_on
+  puts "📅 Finished: #{Time.at(task_details.task.finished_on.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+end
+if task_details.task.delivered_on
+  puts "📅 Delivered: #{Time.at(task_details.task.delivered_on.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+end
+
+# Show task history
+if task_details.task.reopened_on
+  puts "📅 Reopened: #{Time.at(task_details.task.reopened_on.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+end
+if task_details.task.restarted_on
+  puts "📅 Restarted: #{Time.at(task_details.task.restarted_on.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+end
+
+# Show reviewers
+if task_details.task.reviewers && task_details.task.reviewers.reviewer
+  reviewers = task_details.task.reviewers.reviewer
+  puts "👥 Reviewers: #{reviewers.length} reviewers"
+  reviewers.first(5).each do |reviewer|
+    puts "  - #{reviewer.user_name} (Status: #{reviewer.status})"
+  end
+end
+
+# Show next actions
+if task_details.task.next_actions && task_details.task.next_actions.action
+  actions = task_details.task.next_actions.action
+  puts "⚡ Available actions: #{actions.join(', ')}"
+end
+
+# Show task content
+if task_details.task.name
+  puts "📝 Task content: #{task_details.task.name[0..200]}..."
+end
+if task_details.task.notes
+  puts "📝 Notes: #{task_details.task.notes[0..200]}..."
+end
+
+# Show links
+if task_details.task.mlink
+  puts "🔗 MLink: #{task_details.task.mlink}"
+end
+
+# Show attachments
+if task_details.task.attachments
+  puts "📎 Attachments: #{task_details.task.attachments.length} attachments"
+end
+if task_details.task.attachment_references
+  puts "📎 Attachment references: #{task_details.task.attachment_references.length} references"
+end
+```
+
 ## Available Modules
 
 ### ✅ Currently Implemented
@@ -759,6 +899,10 @@ end
 #### Attachments Module
 - **Get Folders**: `client.get_folders` - Get user's file folders with permissions and metadata
 - **Get Folder Files**: `client.get_folder_files(folder_id, include_folders: "Y")` - Get files and folders inside a specific folder
+
+#### Tasks Module
+- **Get Tasks**: `client.get_tasks(filter: "Pending_Tasks", page: 1, limit: 5)` - Get user's tasks with filtering, pagination, and detailed task information
+- **Get Task Details**: `client.get_task_details(task_id)` - Get detailed information for a specific task by ID
 
 ## Complete Examples
 
@@ -1092,6 +1236,53 @@ if folders.folders.any?
 end
 puts ""
 
+# Get user tasks
+tasks = client.get_tasks(filter: "Pending_Tasks", page: 1, limit: 3)
+
+puts "📋 User Tasks:"
+puts "  Total tasks: #{tasks.tasks.task.length}"
+puts ""
+
+# Display first few tasks
+puts "📋 Recent Tasks:"
+tasks.tasks.task.first(3).each do |task|
+  puts "  • #{task.task_title} (ID: #{task.id})"
+  puts "    Status: #{task.status} | Assigned to: #{task.assigned_to_name}"
+  puts "    Due: #{task.due_on ? Time.at(task.due_on.to_i).strftime('%Y-%m-%d') : 'None'}"
+  puts "    Is overdue: #{task.is_overdue} | Priority: #{task.personal_priority}"
+end
+puts ""
+
+# Get detailed information for the first task
+if tasks.tasks.task.any?
+  first_task = tasks.tasks.task.first
+  task_id = first_task.is_a?(Array) ? first_task[1] : first_task.id
+  task_details = client.get_task_details(task_id)
+  
+  puts "📋 Task Details:"
+  puts "  Task: #{task_details.task.task_title} (ID: #{task_details.task.id})"
+  puts "  Status: #{task_details.task.status} | Bucket: #{task_details.task.bucket}"
+  puts "  Assigned to: #{task_details.task.assigned_to_name} | Created by: #{task_details.task.creator_name}"
+  puts "  Due: #{task_details.task.due_on ? Time.at(task_details.task.due_on.to_i).strftime('%Y-%m-%d') : 'None'}"
+  puts "  Is overdue: #{task_details.task.is_overdue} | Priority: #{task_details.task.personal_priority}"
+  puts "  Milestone: #{task_details.task.milestone_name || 'None'}"
+  puts "  Project: #{task_details.task.conversation_name}"
+  puts "  Visibility: #{task_details.task.visibility}"
+  
+  # Show reviewers
+  if task_details.task.reviewers && task_details.task.reviewers.reviewer
+    reviewers = task_details.task.reviewers.reviewer
+    puts "  Reviewers: #{reviewers.length} reviewers"
+  end
+  
+  # Show next actions
+  if task_details.task.next_actions && task_details.task.next_actions.action
+    actions = task_details.task.next_actions.action
+    puts "  Available actions: #{actions.join(', ')}"
+  end
+end
+puts ""
+
 # Get core value tags
 tags = client.core_value_tags
 
@@ -1277,10 +1468,11 @@ This SDK uses **real TDD** - no mocking, only actual OAuth testing:
 - ✅ **Libraries Module**: Get user's document libraries with categories and items, get library categories by ID, and get library items by library and category ID (3 endpoints)
 - ✅ **Trackers Module**: Get user's trackers with submission dates and conversation details (1 endpoint)
 - ✅ **Attachments Module**: Get user's file folders with permissions and metadata, and get files and folders inside specific folders (2 endpoints)
+- ✅ **Tasks Module**: Get user's tasks with filtering, pagination, and detailed task information, and get detailed information for specific tasks (2 endpoints)
 - ✅ **Error Handling**: Comprehensive error logging and testing
 - ✅ **OAuth Flow**: Token management and refresh
 
-**Total: 23 API endpoints across 9 modules**
+**Total: 25 API endpoints across 10 modules**
 
 ## Contributing
 

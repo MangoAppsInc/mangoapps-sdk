@@ -15,6 +15,7 @@ require_relative "mangoapps/modules/posts"
 require_relative "mangoapps/modules/libraries"
 require_relative "mangoapps/modules/trackers"
 require_relative "mangoapps/modules/attachments"
+require_relative "mangoapps/modules/tasks"
 
 module MangoApps; end
 
@@ -28,3 +29,4 @@ MangoApps::Client.include(MangoApps::Client::Posts)
 MangoApps::Client.include(MangoApps::Client::Libraries)
 MangoApps::Client.include(MangoApps::Client::Trackers)
 MangoApps::Client.include(MangoApps::Client::Attachments)
+MangoApps::Client.include(MangoApps::Client::Tasks)

@@ -5,6 +5,94 @@ All notable changes to the MangoApps Ruby SDK will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2024-12-19
+
+### Added
+- **Notifications API** in Notifications Module
+  - `client.notifications` - Get user's notifications with unread counts and detailed notification information
+  - Access to comprehensive notification data including IDs, sender information, and notification content
+  - Access to unread counts including what's new, unread feeds, mentions, and direct messages
+  - Access to notification metadata including types, categories, timestamps, and read status
+  - Access to mention tags and client metadata for enhanced notification handling
+  - Clean dot notation access: `response.notifications` with comprehensive notification data
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for notifications API (2 total notifications tests)
+- **Documentation** - Updated README with notifications examples and complete workflow
+- **API Completeness** - Notifications module now includes 2 comprehensive endpoints for complete notification management
+
+## [0.12.0] - 2024-12-19
+
+### Removed
+- **Tango Gift Cards API** from Recognitions Module
+  - Removed `client.tango_gift_cards` endpoint and related functionality
+  - Removed tango gift cards module file and test coverage
+  - Updated recognitions module to exclude tango gift cards functionality
+  - Updated documentation to remove tango gift cards references
+
+### Enhanced
+- **API Cleanup** - Streamlined recognitions module by removing unused tango gift cards functionality
+- **Documentation** - Updated README and CHANGELOG to reflect tango gift cards removal
+- **Module Efficiency** - Recognitions module now includes 8 focused endpoints for recognition management
+
+## [0.11.0] - 2024-12-19
+
+### Added
+- **Get Award Feeds API** in Recognitions Module
+  - `client.get_award_feeds` - Get award feeds with comprehensive recognition data
+  - Access to comprehensive award feeds including IDs, types, categories, and recognition points
+  - Access to feed properties including titles, labels, image URLs, and status information
+  - Access to user information including from users, to users, and feed story users
+  - Access to feed interactions including reactions, comments, attachments, and core value tags
+  - Access to feed metadata including creation/update dates, platform, and visibility settings
+  - Access to unread counts including direct messages, mentions, and notification counts
+  - Access to system information including MangoApps version, moderation settings, and mobile pin options
+  - Clean dot notation access: `response.feeds` with comprehensive award feed data
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for get award feeds API (8 total recognitions tests)
+- **Documentation** - Updated README with get award feeds examples and complete workflow
+- **API Completeness** - Recognitions module now includes 8 comprehensive endpoints for complete recognition management
+
+## [0.10.0] - 2024-12-19
+
+### Added
+- **Get Wiki Details API** in Wikis Module
+  - `client.get_wiki_details(wiki_id)` - Get detailed information for a specific wiki by ID
+  - Access to comprehensive wiki details including IDs, titles, descriptions, and metadata
+  - Access to wiki properties including status, platform, creation/update dates, and user information
+  - Access to wiki permissions including edit, delete, rename, move, and duplicate capabilities
+  - Access to wiki content including descriptions, banner URLs, and icon properties
+  - Access to wiki interactions including reactions, comments, attachments, and hashtags
+  - Access to wiki structure including TOC, governance, and archival information
+  - Clean dot notation access: `response.wiki` with comprehensive wiki details
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for get wiki details API (2 total wikis tests)
+- **Documentation** - Updated README with get wiki details examples and complete workflow
+- **API Completeness** - Wikis module now includes 2 comprehensive endpoints for complete wiki management
+
+## [0.9.0] - 2024-12-19
+
+### Added
+- **Wikis Module** - New module for wiki management
+  - `client.get_wikis(mode: "my", limit: 20, offset: 0)` - Get user's wikis with filtering, pagination, and detailed wiki information
+  - Access to comprehensive wiki data including IDs, titles, children counts, and update dates
+  - Access to wiki properties including conversation details, edit permissions, and draft status
+  - Access to wiki metadata including icon properties, PDF access, and governance settings
+  - Access to wiki context including user information, status, and image URLs
+  - Clean dot notation access: `response.wikis` with comprehensive wiki data
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for wikis module (1 total wikis test)
+- **Documentation** - Updated README with wikis examples and complete workflow
+- **Module Architecture** - Added new wikis module following established patterns
+- **Test Runner** - Updated run_tests.sh to include wikis module testing
+
 ## [0.8.0] - 2024-12-19
 
 ### Added

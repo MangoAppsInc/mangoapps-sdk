@@ -126,29 +126,6 @@ RSpec.describe "MangoApps Recognitions Module" do
     end
   end
 
-  describe "Tango Gift Cards" do
-    it "gets tango gift cards from actual MangoApps API" do
-      puts "\n🎁 Testing Recognitions API - Tango Gift Cards..."
-      
-      response = client.tango_gift_cards
-      
-      expect(response).to be_a(MangoApps::Response) # Recognitions API returns wrapped response
-      expect(response).to respond_to(:tango_cards)
-      puts "✅ Tango gift cards API call successful!"
-      puts "📊 Response contains tango gift cards data"
-      
-      # Validate the tango gift card structure using dot notation
-      if response.tango_cards
-        expect(response.tango_cards).to respond_to(:available_points)
-        expect(response.tango_cards).to respond_to(:terms)
-        puts "✅ Tango gift cards structure validated"
-        puts "📊 Available points: #{response.tango_cards.available_points}"
-        puts "🎁 Terms: #{response.tango_cards.terms[0..100]}..." if response.tango_cards.terms
-      else
-        puts "📊 Tango gift cards data is nil"
-      end
-    end
-  end
 
   describe "Gift Cards" do
     it "gets gift cards from actual MangoApps API" do
@@ -313,6 +290,289 @@ RSpec.describe "MangoApps Recognitions Module" do
         expect(response.unread_counts).to respond_to(:unread_notification_count)
         puts "✅ Unread counts structure validated"
         puts "📊 Unread notifications: #{response.unread_counts.unread_notification_count}"
+      end
+    end
+
+    describe "Get Award Feeds" do
+      it "gets award feeds from actual MangoApps API" do
+        puts "\n🏆 Testing Recognitions API - Get Award Feeds..."
+
+        response = client.get_award_feeds
+
+        expect(response).to be_a(MangoApps::Response)
+        expect(response).to respond_to(:transaction_id)
+        expect(response).to respond_to(:limit)
+        expect(response).to respond_to(:current_priority)
+        expect(response).to respond_to(:enable_mobile_pin)
+        expect(response).to respond_to(:mangoapps_version)
+        expect(response).to respond_to(:comments_order)
+        expect(response).to respond_to(:private_message_reply_order)
+        expect(response).to respond_to(:photo_shape)
+        expect(response).to respond_to(:moderation_feed_ids)
+        expect(response).to respond_to(:moderation_html)
+        expect(response).to respond_to(:unread_counts)
+        expect(response).to respond_to(:feeds)
+        puts "✅ Get award feeds API call successful!"
+        puts "🏆 Response contains award feeds data"
+        puts "✅ Award feeds structure validated"
+
+        # Test unread counts
+        if response.unread_counts
+          unread_counts = response.unread_counts
+            expect(unread_counts).to respond_to(:direct_messages_count)
+            expect(unread_counts).to respond_to(:whats_new_count)
+            expect(unread_counts).to respond_to(:unread_feeds_count)
+            expect(unread_counts).to respond_to(:mention_count)
+            expect(unread_counts).to respond_to(:primary_unread_count)
+            expect(unread_counts).to respond_to(:secondary_unread_count)
+            expect(unread_counts).to respond_to(:unread_notification_count)
+            puts "✅ Unread counts structure validated"
+            puts "📊 Direct messages: #{unread_counts.direct_messages_count}"
+            puts "📊 What's new: #{unread_counts.whats_new_count}"
+            puts "📊 Unread feeds: #{unread_counts.unread_feeds_count}"
+            puts "📊 Mentions: #{unread_counts.mention_count}"
+            puts "📊 Primary unread: #{unread_counts.primary_unread_count}"
+            puts "📊 Secondary unread: #{unread_counts.secondary_unread_count}"
+            puts "📊 Unread notifications: #{unread_counts.unread_notification_count}"
+          end
+
+        # Test feeds
+        if response.feeds
+          feeds = response.feeds
+            expect(feeds).to be_an(Array)
+            puts "✅ Feeds structure validated"
+            puts "🏆 Found #{feeds.length} award feeds"
+
+            if feeds.any?
+              # Test first feed structure
+              feed = feeds.first
+              expect(feed).to respond_to(:id)
+              expect(feed).to respond_to(:feed_type)
+              expect(feed).to respond_to(:body)
+              expect(feed).to respond_to(:shared_in_conversations)
+              expect(feed).to respond_to(:shared_with_multiple_user)
+              expect(feed).to respond_to(:feed_subject)
+              expect(feed).to respond_to(:email_extra_info)
+              expect(feed).to respond_to(:mention_tags)
+              expect(feed).to respond_to(:hash_tags)
+              expect(feed).to respond_to(:mlink)
+              expect(feed).to respond_to(:category)
+              expect(feed).to respond_to(:is_system)
+              expect(feed).to respond_to(:is_link)
+              expect(feed).to respond_to(:shareable)
+              expect(feed).to respond_to(:sub_category)
+              expect(feed).to respond_to(:session_id)
+              expect(feed).to respond_to(:visibility)
+              expect(feed).to respond_to(:is_highlighted)
+              expect(feed).to respond_to(:is_edited)
+              expect(feed).to respond_to(:is_ack)
+              expect(feed).to respond_to(:is_boost_post_dm)
+              expect(feed).to respond_to(:msg_content_type)
+              expect(feed).to respond_to(:message_content_url)
+              expect(feed).to respond_to(:can_flag)
+              expect(feed).to respond_to(:feed_status_type)
+              expect(feed).to respond_to(:from_user)
+              expect(feed).to respond_to(:is_automation_feed)
+              expect(feed).to respond_to(:has_stories)
+              expect(feed).to respond_to(:feed_story_users)
+              expect(feed).to respond_to(:remaining_user_count)
+              expect(feed).to respond_to(:to_users)
+              expect(feed).to respond_to(:recognition_points)
+              expect(feed).to respond_to(:reward_points)
+              expect(feed).to respond_to(:core_value_tags)
+              expect(feed).to respond_to(:feed_property)
+              expect(feed).to respond_to(:group_id)
+              expect(feed).to respond_to(:platform)
+              expect(feed).to respond_to(:liked)
+              expect(feed).to respond_to(:superliked)
+              expect(feed).to respond_to(:haha)
+              expect(feed).to respond_to(:yay)
+              expect(feed).to respond_to(:wow)
+              expect(feed).to respond_to(:sad)
+              expect(feed).to respond_to(:like_count)
+              expect(feed).to respond_to(:superlike_count)
+              expect(feed).to respond_to(:haha_count)
+              expect(feed).to respond_to(:yay_count)
+              expect(feed).to respond_to(:wow_count)
+              expect(feed).to respond_to(:sad_count)
+              expect(feed).to respond_to(:reaction_data)
+              expect(feed).to respond_to(:comment_count)
+              expect(feed).to respond_to(:attachment_count)
+              expect(feed).to respond_to(:liked_list)
+              expect(feed).to respond_to(:watched)
+              expect(feed).to respond_to(:unread)
+              expect(feed).to respond_to(:comments)
+              expect(feed).to respond_to(:created_at)
+              expect(feed).to respond_to(:updated_at)
+              puts "✅ Feed structure validated"
+              puts "🏆 Feed ID: #{feed.id} | Type: #{feed.feed_type}"
+              puts "📊 Category: #{feed.category} | Sub-category: #{feed.sub_category}"
+              puts "🔗 MLink: #{feed.mlink}"
+              puts "👤 From user: #{feed.from_user.name if feed.from_user}"
+              puts "🎯 Recognition points: #{feed.recognition_points}"
+              puts "🏷️ Core value tags: #{feed.core_value_tags.length if feed.core_value_tags}"
+              puts "👍 Reactions: Like: #{feed.like_count}, Superlike: #{feed.superlike_count}"
+              puts "😄 Reactions: Haha: #{feed.haha_count}, Yay: #{feed.yay_count}, Wow: #{feed.wow_count}, Sad: #{feed.sad_count}"
+              puts "💬 Comments: #{feed.comment_count} | Attachments: #{feed.attachment_count}"
+              puts "📅 Created: #{Time.at(feed.created_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+              puts "📅 Updated: #{Time.at(feed.updated_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+
+              # Test feed property
+              if feed.feed_property
+                feed_property = feed.feed_property
+                expect(feed_property).to respond_to(:stripped_description)
+                expect(feed_property).to respond_to(:status)
+                expect(feed_property).to respond_to(:title)
+                expect(feed_property).to respond_to(:image_url)
+                expect(feed_property).to respond_to(:icon_properties)
+                expect(feed_property).to respond_to(:additional_info_url)
+                expect(feed_property).to respond_to(:label_1)
+                expect(feed_property).to respond_to(:label_2)
+                expect(feed_property).to respond_to(:label_3)
+                expect(feed_property).to respond_to(:result_format)
+                expect(feed_property).to respond_to(:custom_poll_choices)
+                expect(feed_property).to respond_to(:feed_poll_notify)
+                expect(feed_property).to respond_to(:poll_multiple_vote_allowed)
+                expect(feed_property).to respond_to(:poll_close_time)
+                expect(feed_property).to respond_to(:allow_poll_comment)
+                expect(feed_property).to respond_to(:custom_labels)
+                expect(feed_property).to respond_to(:status_updated_by)
+                expect(feed_property).to respond_to(:priority)
+                expect(feed_property).to respond_to(:priority_date)
+                expect(feed_property).to respond_to(:label_4)
+                puts "✅ Feed property structure validated"
+                puts "🏆 Award title: #{feed_property.title}"
+                puts "🏷️ Labels: #{feed_property.label_1} | #{feed_property.label_2}"
+                puts "🖼️ Image URL: #{feed_property.image_url[0..50]}..." if feed_property.image_url
+                puts "📊 Status: #{feed_property.status} | Result format: #{feed_property.result_format}"
+              end
+
+              # Test from user
+              if feed.from_user
+                from_user = feed.from_user
+                expect(from_user).to respond_to(:id)
+                expect(from_user).to respond_to(:name)
+                expect(from_user).to respond_to(:email)
+                expect(from_user).to respond_to(:photo)
+                expect(from_user).to respond_to(:presence_option_id)
+                puts "✅ From user structure validated"
+                puts "👤 User: #{from_user.name} (ID: #{from_user.id})"
+                puts "📧 Email: #{from_user.email}"
+                puts "🖼️ Photo: #{from_user.photo[0..50]}..." if from_user.photo
+              end
+
+              # Test to users
+              if feed.to_users
+                to_users = feed.to_users
+                expect(to_users).to be_an(Array)
+                puts "✅ To users structure validated"
+                puts "👥 To users: #{to_users.length} users"
+                to_users.each do |user|
+                  expect(user).to respond_to(:id)
+                  expect(user).to respond_to(:name)
+                  expect(user).to respond_to(:email)
+                  expect(user).to respond_to(:photo)
+                  expect(user).to respond_to(:presence_option_id)
+                  puts "  - #{user.name} (ID: #{user.id})"
+                end
+              end
+
+              # Test feed story users
+              if feed.feed_story_users
+                feed_story_users = feed.feed_story_users
+                expect(feed_story_users).to be_an(Array)
+                puts "✅ Feed story users structure validated"
+                puts "📖 Story users: #{feed_story_users.length} users"
+                feed_story_users.each do |user|
+                  expect(user).to respond_to(:id)
+                  expect(user).to respond_to(:name)
+                  expect(user).to respond_to(:email)
+                  expect(user).to respond_to(:photo)
+                  expect(user).to respond_to(:presence_option_id)
+                  puts "  - #{user.name} (ID: #{user.id})"
+                end
+              end
+
+              # Test core value tags
+              if feed.core_value_tags
+                core_value_tags = feed.core_value_tags
+                expect(core_value_tags).to be_an(Array)
+                puts "✅ Core value tags structure validated"
+                puts "🏷️ Core value tags: #{core_value_tags.length} tags"
+                core_value_tags.each do |tag|
+                  expect(tag).to respond_to(:id)
+                  expect(tag).to respond_to(:name)
+                  expect(tag).to respond_to(:color)
+                  puts "  - #{tag.name} (ID: #{tag.id}, Color: #{tag.color})"
+                end
+              end
+
+              # Test reaction data
+              if feed.reaction_data
+                reaction_data = feed.reaction_data
+                expect(reaction_data).to be_an(Array)
+                puts "✅ Reaction data structure validated"
+                puts "📊 Reaction data: #{reaction_data.length} reaction types"
+                reaction_data.each do |reaction|
+                  expect(reaction).to respond_to(:key)
+                  expect(reaction).to respond_to(:count)
+                  expect(reaction).to respond_to(:reacted)
+                  expect(reaction).to respond_to(:label)
+                  puts "  - #{reaction.label}: #{reaction.count} (Reacted: #{reaction.reacted})"
+                end
+              end
+
+              # Test comments
+              if feed.comments
+                comments = feed.comments
+                expect(comments).to be_an(Array)
+                puts "✅ Comments structure validated"
+                puts "💬 Comments: #{comments.length} comments"
+                comments.first(3).each do |comment|
+                  expect(comment).to respond_to(:id)
+                  expect(comment).to respond_to(:feed_id)
+                  expect(comment).to respond_to(:body)
+                  expect(comment).to respond_to(:created_at)
+                  expect(comment).to respond_to(:updated_at)
+                  expect(comment).to respond_to(:user)
+                  puts "  - #{comment.body[0..50]}... by #{comment.user.name if comment.user}"
+                end
+              end
+
+              # Display first few feeds
+              puts "🏆 Award Feed List:"
+              feeds.first(3).each do |f|
+                puts "  • Feed ID: #{f.id} | Type: #{f.feed_type}"
+                puts "    Category: #{f.category} | Recognition points: #{f.recognition_points}"
+                puts "    From: #{f.from_user.name if f.from_user} | To: #{f.to_users.length if f.to_users} users"
+                puts "    Reactions: Like: #{f.like_count}, Superlike: #{f.superlike_count}"
+                puts "    Comments: #{f.comment_count} | Created: #{Time.at(f.created_at.to_i).strftime('%Y-%m-%d')}"
+                if f.feed_property
+                  puts "    Award: #{f.feed_property.title} | Labels: #{f.feed_property.label_1}, #{f.feed_property.label_2}"
+                end
+                puts ""
+              end
+            else
+              puts "🏆 Award feeds list is empty"
+            end
+          else
+            puts "🏆 Feeds data not found"
+          end
+
+        # Test other response properties
+        puts "📊 Transaction ID: #{response.transaction_id || 'None'}"
+        puts "📊 Limit: #{response.limit || 'None'}"
+        puts "📊 Current priority: #{response.current_priority || 'None'}"
+        puts "📊 Enable mobile pin: #{response.enable_mobile_pin}"
+        puts "📊 MangoApps version: #{response.mangoapps_version}"
+        puts "📊 Comments order: #{response.comments_order}"
+        puts "📊 Private message reply order: #{response.private_message_reply_order || 'None'}"
+        puts "📊 Photo shape: #{response.photo_shape || 'None'}"
+        puts "📊 Moderation feed IDs: #{response.moderation_feed_ids || 'None'}"
+        puts "📊 Moderation HTML: #{response.moderation_html || 'None'}"
+
+        expect(response).to respond_to(:feeds)
+        puts "✅ Response structure validated"
       end
     end
   end

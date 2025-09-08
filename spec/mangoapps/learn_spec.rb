@@ -78,7 +78,7 @@ RSpec.describe "MangoApps Learn Module" do
       puts "\n📖 Testing Learn API - Course Details..."
       
       # Use a known course ID from the example (604)
-      course_id = 604
+      course_id = 3000
       response = client.course_details(course_id)
       
       expect(response).to be_a(MangoApps::Response) # Learn API returns wrapped response

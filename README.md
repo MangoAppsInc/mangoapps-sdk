@@ -168,6 +168,17 @@ if tasks.tasks.task.any?
   task_details = client.get_task_details(task_id)
   puts "Task details: #{task_details.task.task_title} (Status: #{task_details.task.status})"
 end
+
+# Get user wikis
+wikis = client.get_wikis(mode: "my", limit: 5, offset: 0)
+puts "User wikis: #{wikis.wikis.length}"
+
+# Get detailed information for the first wiki
+if wikis.wikis.any?
+  first_wiki = wikis.wikis.first
+  wiki_details = client.get_wiki_details(first_wiki.id)
+  puts "Wiki details: #{wiki_details.wiki.details.title} (Read count: #{wiki_details.wiki.details.total_read_count})"
+end
 ```
 
 #### Manual OAuth Flow
@@ -855,6 +866,237 @@ if task_details.task.attachment_references
 end
 ```
 
+#### Wiki Management
+```ruby
+# Get user's wikis with filtering and pagination
+wikis = client.get_wikis(mode: "my", limit: 20, offset: 0)
+
+# Access wikis data
+puts "📚 User Wikis:"
+puts "  Total wikis: #{wikis.wikis.length}"
+puts "  Transaction ID: #{wikis.transaction_id || 'None'}"
+puts ""
+
+# Display wikis
+puts "📚 Wiki List:"
+wikis.wikis.each do |wiki|
+  puts "  • #{wiki.title} (ID: #{wiki.id})"
+  puts "    Updated: #{Time.at(wiki.updated_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+  puts "    Children: #{wiki.children_count} | Can edit: #{wiki.can_edit}"
+  puts "    Conversation: #{wiki.conversation_name || 'None'} (ID: #{wiki.conversation_id})"
+  puts "    Is draft: #{wiki.is_draft} | PDF access: #{wiki.generate_pdf_access}"
+  puts "    User: #{wiki.user_name || 'None'} | Status: #{wiki.status || 'None'}"
+  puts "    Governance enabled: #{wiki.governance_enabled} | Governance date: #{wiki.governance_date || 'None'}"
+  
+  # Show icon properties
+  if wiki.icon_properties
+    background_color = wiki.icon_properties.respond_to?(:'background-color') ? wiki.icon_properties.send(:'background-color') : nil
+    puts "    Icon: #{wiki.icon_properties.class} | Color: #{background_color || 'None'}"
+  end
+  
+  # Show user image URL
+  if wiki.user_image_url
+    puts "    User image: #{wiki.user_image_url[0..50]}..."
+  end
+  
+  puts ""
+end
+```
+
+#### Wiki Details Management
+```ruby
+# Get detailed information for a specific wiki
+wiki_details = client.get_wiki_details("7212")
+
+# Access wiki details data
+puts "📚 Wiki Details:"
+puts "  Wiki ID: #{wiki_details.wiki.details.id}"
+puts "  Title: #{wiki_details.wiki.details.title}"
+puts "  Status: #{wiki_details.wiki.details.status} | Platform: #{wiki_details.wiki.details.platform}"
+puts "  Created: #{Time.at(wiki_details.wiki.details.created_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+puts "  Updated: #{Time.at(wiki_details.wiki.details.updated_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+puts "  Modified: #{wiki_details.wiki.details.modified_on}"
+puts "  Created by: #{wiki_details.wiki.details.created_by_name} (ID: #{wiki_details.wiki.details.user_id})"
+puts "  Updated by: #{wiki_details.wiki.details.updated_by_name} (ID: #{wiki_details.wiki.details.last_updated_by})"
+puts "  Conversation: #{wiki_details.wiki.details.conversation_name} (ID: #{wiki_details.wiki.details.conversation_id})"
+puts "  Read count: #{wiki_details.wiki.details.total_read_count} | Children: #{wiki_details.wiki.details.children_count}"
+puts "  Edit permissions: #{wiki_details.wiki.details.edit_permissions} | Commentable: #{wiki_details.wiki.details.is_commentable}"
+puts "  Generate PDF access: #{wiki_details.wiki.details.generate_pdf_access} | Show TOC: #{wiki_details.wiki.details.show_toc}"
+puts "  Has TOC: #{wiki_details.wiki.details.has_toc} | Archived: #{wiki_details.wiki.details.archived}"
+puts "  Domain ID: #{wiki_details.wiki.details.domain_id} | Feed ID: #{wiki_details.wiki.details.feed_id}"
+puts ""
+
+# Show wiki content
+if wiki_details.wiki.details.description
+  puts "📝 Description: #{wiki_details.wiki.details.description[0..300]}..."
+end
+
+# Show banner URL
+if wiki_details.wiki.details.banner_url
+  puts "🖼️ Banner URL: #{wiki_details.wiki.details.banner_url}"
+end
+
+# Show wiki permissions
+puts "🔐 Wiki Permissions:"
+puts "  Can comment: #{wiki_details.wiki.can_comment}"
+puts "  Can edit: #{wiki_details.wiki.can_edit}"
+puts "  Can delete: #{wiki_details.wiki.can_delete}"
+puts "  Can rename: #{wiki_details.wiki.can_rename}"
+puts "  Can move: #{wiki_details.wiki.can_move}"
+puts "  Can duplicate: #{wiki_details.wiki.can_duplicate}"
+
+# Show wiki links
+if wiki_details.wiki.mlink
+  puts "🔗 MLink: #{wiki_details.wiki.mlink}"
+end
+
+# Show attachments
+if wiki_details.wiki.attachments
+  puts "📎 Attachments: #{wiki_details.wiki.attachments.length} attachments"
+end
+if wiki_details.wiki.attachment_references
+  puts "📎 Attachment references: #{wiki_details.wiki.attachment_references.length} references"
+end
+
+# Show reactions
+if wiki_details.wiki.reactions
+  reactions = wiki_details.wiki.reactions
+  puts "👍 Reactions: Like: #{reactions.like_count}, Superlike: #{reactions.superlike_count}"
+  puts "😄 Reactions: Haha: #{reactions.haha_count}, Yay: #{reactions.yay_count}, Wow: #{reactions.wow_count}, Sad: #{reactions.sad_count}"
+  puts "👤 User reactions: Liked: #{reactions.liked}, Superliked: #{reactions.superliked}"
+end
+
+# Show reaction data
+if wiki_details.wiki.reaction_data
+  reaction_data = wiki_details.wiki.reaction_data
+  puts "📊 Reaction data: #{reaction_data.length} reaction types"
+  reaction_data.each do |reaction|
+    puts "  - #{reaction.label}: #{reaction.count} (Reacted: #{reaction.reacted})"
+  end
+end
+
+# Show comment count
+puts "💬 Comment count: #{wiki_details.wiki.comment_count}"
+
+# Show wiki status
+puts "📌 Is pinned: #{wiki_details.wiki.is_pinned}"
+puts "📄 Is draft: #{wiki_details.wiki.is_draft}"
+puts "🔒 Governance enabled: #{wiki_details.wiki.governance_enabled}"
+
+# Show hashtags
+if wiki_details.wiki.hashtags
+  hashtags = wiki_details.wiki.hashtags
+  puts "🏷️ Hashtags: #{hashtags.length} hashtags"
+  hashtags.each do |hashtag|
+    puts "  - #{hashtag}"
+  end
+end
+```
+
+#### Award Feeds Management
+```ruby
+# Get award feeds with comprehensive recognition data
+award_feeds = client.get_award_feeds
+
+# Access award feeds data
+puts "🏆 Award Feeds:"
+puts "  Transaction ID: #{award_feeds.transaction_id || 'None'}"
+puts "  Limit: #{award_feeds.limit || 'None'}"
+puts "  Current priority: #{award_feeds.current_priority || 'None'}"
+puts "  Enable mobile pin: #{award_feeds.enable_mobile_pin}"
+puts "  MangoApps version: #{award_feeds.mangoapps_version}"
+puts "  Comments order: #{award_feeds.comments_order}"
+puts "  Private message reply order: #{award_feeds.private_message_reply_order || 'None'}"
+puts "  Photo shape: #{award_feeds.photo_shape || 'None'}"
+puts "  Moderation feed IDs: #{award_feeds.moderation_feed_ids || 'None'}"
+puts "  Moderation HTML: #{award_feeds.moderation_html || 'None'}"
+puts ""
+
+# Show unread counts
+if award_feeds.unread_counts
+  unread_counts = award_feeds.unread_counts
+  puts "📊 Unread Counts:"
+  puts "  Direct messages: #{unread_counts.direct_messages_count}"
+  puts "  What's new: #{unread_counts.whats_new_count}"
+  puts "  Unread feeds: #{unread_counts.unread_feeds_count}"
+  puts "  Mentions: #{unread_counts.mention_count}"
+  puts "  Primary unread: #{unread_counts.primary_unread_count}"
+  puts "  Secondary unread: #{unread_counts.secondary_unread_count}"
+  puts "  Unread notifications: #{unread_counts.unread_notification_count}"
+  puts ""
+end
+
+# Display award feeds
+puts "🏆 Award Feed List:"
+award_feeds.feeds.each do |feed|
+  puts "  • Feed ID: #{feed.id} | Type: #{feed.feed_type}"
+  puts "    Category: #{feed.category} | Sub-category: #{feed.sub_category}"
+  puts "    Recognition points: #{feed.recognition_points}"
+  puts "    From: #{feed.from_user.name if feed.from_user} | To: #{feed.to_users.length if feed.to_users} users"
+  puts "    Reactions: Like: #{feed.like_count}, Superlike: #{feed.superlike_count}"
+  puts "    Comments: #{feed.comment_count} | Attachments: #{feed.attachment_count}"
+  puts "    Created: #{Time.at(feed.created_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+  puts "    Updated: #{Time.at(feed.updated_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+  
+  # Show award details
+  if feed.feed_property
+    puts "    Award: #{feed.feed_property.title}"
+    puts "    Labels: #{feed.feed_property.label_1}, #{feed.feed_property.label_2}"
+    puts "    Image URL: #{feed.feed_property.image_url[0..50]}..." if feed.feed_property.image_url
+    puts "    Status: #{feed.feed_property.status} | Result format: #{feed.feed_property.result_format}"
+  end
+  
+  # Show from user
+  if feed.from_user
+    puts "    From user: #{feed.from_user.name} (ID: #{feed.from_user.id})"
+    puts "    Email: #{feed.from_user.email}"
+    puts "    Photo: #{feed.from_user.photo[0..50]}..." if feed.from_user.photo
+  end
+  
+  # Show to users
+  if feed.to_users
+    puts "    To users: #{feed.to_users.length} users"
+    feed.to_users.each do |user|
+      puts "      - #{user.name} (ID: #{user.id})"
+    end
+  end
+  
+  # Show feed story users
+  if feed.feed_story_users
+    puts "    Story users: #{feed.feed_story_users.length} users"
+    feed.feed_story_users.each do |user|
+      puts "      - #{user.name} (ID: #{user.id})"
+    end
+  end
+  
+  # Show core value tags
+  if feed.core_value_tags
+    puts "    Core value tags: #{feed.core_value_tags.length} tags"
+    feed.core_value_tags.each do |tag|
+      puts "      - #{tag.name} (ID: #{tag.id}, Color: #{tag.color})"
+    end
+  end
+  
+  # Show reaction data
+  if feed.reaction_data
+    puts "    Reaction data: #{feed.reaction_data.length} reaction types"
+    feed.reaction_data.each do |reaction|
+      puts "      - #{reaction.label}: #{reaction.count} (Reacted: #{reaction.reacted})"
+    end
+  end
+  
+  # Show comments
+  if feed.comments
+    puts "    Comments: #{feed.comments.length} comments"
+    feed.comments.first(3).each do |comment|
+      puts "      - #{comment.body[0..50]}... by #{comment.user.name if comment.user}"
+    end
+  end
+  
+  puts ""
+end
+```
+
 ## Available Modules
 
 ### ✅ Currently Implemented
@@ -873,13 +1115,14 @@ end
 - **Get Awards List**: `client.get_awards_list(category_id: id)` - Get awards for a specific category
 - **Get Profile Awards**: `client.get_profile_awards` - Get user's personal awards and activity
 - **Get Team Awards**: `client.get_team_awards(project_id: id)` - Get team awards and activity
+- **Get Award Feeds**: `client.get_award_feeds` - Get award feeds with comprehensive recognition data
 - **Core Value Tags**: `client.core_value_tags` - Get core value tags for recognition
 - **Leaderboard Info**: `client.leaderboard_info` - Get user and team leaderboard information
-- **Tango Gift Cards**: `client.tango_gift_cards` - Get tango gift cards information and available points
 - **Gift Cards**: `client.gift_cards` - Get available gift cards for recognition rewards
 
 #### Notifications Module
 - **My Priority Items**: `client.my_priority_items` - Get user's priority items including requests, events, quizzes, surveys, tasks, and todos
+- **Notifications**: `client.notifications` - Get user's notifications with unread counts and detailed notification information
 
 #### Feeds Module
 - **Feeds**: `client.feeds` - Get user's activity feeds with unread counts and feed details
@@ -903,6 +1146,10 @@ end
 #### Tasks Module
 - **Get Tasks**: `client.get_tasks(filter: "Pending_Tasks", page: 1, limit: 5)` - Get user's tasks with filtering, pagination, and detailed task information
 - **Get Task Details**: `client.get_task_details(task_id)` - Get detailed information for a specific task by ID
+
+#### Wikis Module
+- **Get Wikis**: `client.get_wikis(mode: "my", limit: 20, offset: 0)` - Get user's wikis with filtering, pagination, and detailed wiki information
+- **Get Wiki Details**: `client.get_wiki_details(wiki_id)` - Get detailed information for a specific wiki by ID
 
 ## Complete Examples
 
@@ -930,6 +1177,31 @@ priority_items.data.each do |item|
   puts "   Icon: #{item.icon} (#{item.icon_color})"
   puts "   Background: #{item.icon_bg_color}"
   puts "   Description: #{item.info_details.gsub(/<[^>]*>/, '').strip[0..100]}..."
+  puts ""
+end
+
+# Get user's notifications
+notifications = client.notifications
+
+# Display notifications dashboard
+puts "🔔 User Notifications Dashboard"
+puts "==============================="
+puts "What's new: #{notifications.whats_new_count}"
+puts "Unread feeds: #{notifications.unread_feeds_count}"
+puts "Mentions: #{notifications.mention_count}"
+puts "Direct messages: #{notifications.direct_messages_count}"
+puts "Unread notifications: #{notifications.unread_notification_count}"
+puts ""
+
+notifications.notifications.first(5).each do |notification|
+  puts "📢 #{notification.sender_name} (ID: #{notification.id})"
+  puts "   Text: #{notification.text[0..100]}..."
+  puts "   Type: #{notification.notification_type || 'None'}"
+  puts "   Read: #{notification.is_read} | Updated: #{Time.at(notification.updated_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+  puts "   MLink: #{notification.mlink || 'None'}"
+  if notification.mention_tags && notification.mention_tags.any?
+    puts "   Mentions: #{notification.mention_tags.map { |tag| tag.mention }.join(', ')}"
+  end
   puts ""
 end
 
@@ -1283,6 +1555,77 @@ if tasks.tasks.task.any?
 end
 puts ""
 
+# Get user wikis
+wikis = client.get_wikis(mode: "my", limit: 5, offset: 0)
+
+puts "📚 User Wikis:"
+puts "  Total wikis: #{wikis.wikis.length}"
+puts ""
+
+# Display first few wikis
+puts "📚 Recent Wikis:"
+wikis.wikis.first(3).each do |wiki|
+  puts "  • #{wiki.title} (ID: #{wiki.id})"
+  puts "    Updated: #{Time.at(wiki.updated_at.to_i).strftime('%Y-%m-%d')}"
+  puts "    Children: #{wiki.children_count} | Can edit: #{wiki.can_edit}"
+  puts "    Conversation: #{wiki.conversation_name || 'None'} (ID: #{wiki.conversation_id})"
+  puts "    Is draft: #{wiki.is_draft} | PDF access: #{wiki.generate_pdf_access}"
+end
+puts ""
+
+# Get detailed information for the first wiki
+if wikis.wikis.any?
+  first_wiki = wikis.wikis.first
+  wiki_details = client.get_wiki_details(first_wiki.id)
+  
+  puts "📚 Wiki Details:"
+  puts "  Wiki: #{wiki_details.wiki.details.title} (ID: #{wiki_details.wiki.details.id})"
+  puts "  Status: #{wiki_details.wiki.details.status} | Platform: #{wiki_details.wiki.details.platform}"
+  puts "  Created by: #{wiki_details.wiki.details.created_by_name} | Updated by: #{wiki_details.wiki.details.updated_by_name}"
+  puts "  Read count: #{wiki_details.wiki.details.total_read_count} | Children: #{wiki_details.wiki.details.children_count}"
+  puts "  Conversation: #{wiki_details.wiki.details.conversation_name}"
+  puts "  Edit permissions: #{wiki_details.wiki.details.edit_permissions} | Commentable: #{wiki_details.wiki.details.is_commentable}"
+  puts "  Generate PDF access: #{wiki_details.wiki.details.generate_pdf_access} | Show TOC: #{wiki_details.wiki.details.show_toc}"
+  puts "  Archived: #{wiki_details.wiki.details.archived} | Is draft: #{wiki_details.wiki.is_draft}"
+  
+  # Show permissions
+  puts "  Permissions: Comment: #{wiki_details.wiki.can_comment}, Edit: #{wiki_details.wiki.can_edit}, Delete: #{wiki_details.wiki.can_delete}"
+  
+  # Show reactions
+  if wiki_details.wiki.reactions
+    reactions = wiki_details.wiki.reactions
+    puts "  Reactions: Like: #{reactions.like_count}, Superlike: #{reactions.superlike_count}"
+  end
+  
+  # Show comment count
+  puts "  Comment count: #{wiki_details.wiki.comment_count}"
+end
+puts ""
+
+# Get award feeds
+award_feeds = client.get_award_feeds
+
+# Display award feeds
+puts "🏆 Award Feeds:"
+puts "  Unread counts:"
+if award_feeds.unread_counts
+  puts "    Direct messages: #{award_feeds.unread_counts.direct_messages_count}"
+  puts "    What's new: #{award_feeds.unread_counts.whats_new_count}"
+  puts "    Unread feeds: #{award_feeds.unread_counts.unread_feeds_count}"
+  puts "    Mentions: #{award_feeds.unread_counts.mention_count}"
+  puts "    Primary unread: #{award_feeds.unread_counts.primary_unread_count}"
+  puts "    Secondary unread: #{award_feeds.unread_counts.secondary_unread_count}"
+  puts "    Unread notifications: #{award_feeds.unread_counts.unread_notification_count}"
+end
+puts "  Recent Award Feeds:"
+award_feeds.feeds.first(3).each do |feed|
+  puts "    • #{feed.feed_property.title if feed.feed_property} - Points: #{feed.recognition_points}"
+  puts "      From: #{feed.from_user.name if feed.from_user} | To: #{feed.to_users.length if feed.to_users} users"
+  puts "      Reactions: Like: #{feed.like_count}, Superlike: #{feed.superlike_count}"
+  puts "      Comments: #{feed.comment_count} | Created: #{Time.at(feed.created_at.to_i).strftime('%Y-%m-%d')}"
+end
+puts ""
+
 # Get core value tags
 tags = client.core_value_tags
 
@@ -1461,18 +1804,19 @@ This SDK uses **real TDD** - no mocking, only actual OAuth testing:
 
 - ✅ **Learn Module**: Course catalog, categories, course details, and my learning (4 endpoints)
 - ✅ **Users Module**: User profile and authentication (1 endpoint)
-- ✅ **Recognitions Module**: Award categories, get awards list, get profile awards, get team awards, core value tags, leaderboard info, tango gift cards, and gift cards (8 endpoints)
-- ✅ **Notifications Module**: My priority items for requests, events, quizzes, surveys, tasks, and todos (1 endpoint)
+- ✅ **Recognitions Module**: Award categories, get awards list, get profile awards, get team awards, get award feeds, core value tags, leaderboard info, and gift cards (8 endpoints)
+- ✅ **Notifications Module**: My priority items for requests, events, quizzes, surveys, tasks, and todos, and user notifications with unread counts (2 endpoints)
 - ✅ **Feeds Module**: User activity feeds with unread counts and feed details (1 endpoint)
 - ✅ **Posts Module**: Get all posts with filtering options and get post by ID (2 endpoints)
 - ✅ **Libraries Module**: Get user's document libraries with categories and items, get library categories by ID, and get library items by library and category ID (3 endpoints)
 - ✅ **Trackers Module**: Get user's trackers with submission dates and conversation details (1 endpoint)
 - ✅ **Attachments Module**: Get user's file folders with permissions and metadata, and get files and folders inside specific folders (2 endpoints)
 - ✅ **Tasks Module**: Get user's tasks with filtering, pagination, and detailed task information, and get detailed information for specific tasks (2 endpoints)
+- ✅ **Wikis Module**: Get user's wikis with filtering, pagination, and detailed wiki information, and get detailed information for specific wikis (2 endpoints)
 - ✅ **Error Handling**: Comprehensive error logging and testing
 - ✅ **OAuth Flow**: Token management and refresh
 
-**Total: 25 API endpoints across 10 modules**
+**Total: 28 API endpoints across 11 modules**
 
 ## Contributing
 

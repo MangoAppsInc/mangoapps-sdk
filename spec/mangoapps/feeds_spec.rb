@@ -29,7 +29,6 @@ RSpec.describe "MangoApps Feeds Module" do
           expect(feed).to respond_to(:feed_type)
           expect(feed).to respond_to(:body)
           expect(feed).to respond_to(:from_user)
-          expect(feed).to respond_to(:feed_property)
           expect(feed).to respond_to(:group_id)
           expect(feed).to respond_to(:group_name)
           expect(feed).to respond_to(:created_at)

@@ -125,6 +125,20 @@ end
 # Get user libraries
 libraries = client.get_libraries
 puts "User libraries: #{libraries.libraries.length}"
+
+# Get library categories by ID
+if libraries.libraries.any?
+  library_id = libraries.libraries.first.id
+  library_details = client.get_library_categories(library_id)
+  puts "Library details: #{library_details.library.name}"
+  
+  # Get library items from first category
+  if library_details.library.categories.any?
+    category_id = library_details.library.categories.first.id
+    library_items = client.get_library_items(library_id, category_id)
+    puts "Library items: #{library_items.library_items.length} items in #{library_items.category_name}"
+  end
+end
 ```
 
 #### Manual OAuth Flow
@@ -491,6 +505,81 @@ libraries.libraries.each do |library|
 end
 ```
 
+#### Get Library Categories
+```ruby
+# Get detailed library information and categories by library ID
+library_id = 9776
+response = client.get_library_categories(library_id)
+
+# Access library details
+library = response.library
+puts "#{library.name} (ID: #{library.id})"
+puts "  Type: #{library.library_type} | View: #{library.view_mode}"
+puts "  Description: #{library.description}"
+puts "  Total items: #{library.total_items_count} | Categories: #{library.categories.length}"
+puts "  Edit access: #{library.edit_access} | Position: #{library.position}"
+
+# Access library properties
+puts "  Banner color: #{library.banner_color} | Icon color enabled: #{library.enable_icon_color}"
+puts "  Created: #{Time.at(library.created_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+puts "  Updated: #{Time.at(library.updated_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+
+# Access icon properties
+if library.icon_properties
+  puts "  Icon color: #{library.icon_properties.color} | Icon class: #{library.icon_properties.class}"
+end
+
+# Access categories
+if library.categories.any?
+  puts "  Categories:"
+  library.categories.each do |category|
+    puts "    • #{category.name} (ID: #{category.id})"
+    puts "      Items: #{category.library_items_count} | Rank: #{category.rank}"
+    puts "      Is system: #{category.is_system} | Icon: #{category.icon || 'None'}"
+    if category.description
+      puts "      Description: #{category.description[0..100]}..."
+    end
+  end
+end
+```
+
+#### Get Library Items
+```ruby
+# Get library items by library ID and category ID
+library_id = 9776
+category_id = 50114
+response = client.get_library_items(library_id, category_id)
+
+# Access library items data
+puts "Category: #{response.category_name}"
+puts "View mode: #{response.view_mode} | Library type: #{response.library_type}"
+puts "Library ID: #{response.library_id} | Can add: #{response.can_add}"
+puts "Icon color: #{response.enable_icon_color}"
+
+# Access library items
+if response.library_items.any?
+  puts "Library Items:"
+  response.library_items.each do |item|
+    puts "  • #{item.name} (ID: #{item.id})"
+    puts "    Link type: #{item.link_type} | Link: #{item.link[0..50]}..."
+    
+    # Handle different link types
+    if item.link_type == "ExternalLink"
+      if item.icon_properties
+        puts "    Icon: #{item.icon_properties.color} | Class: #{item.icon_properties.class}"
+      end
+    elsif item.link_type == "Attachment"
+      puts "    Attachment ID: #{item.attachment_id} | File type: #{item.file_type}"
+      puts "    Likes: #{item.likes_count} | Is liked: #{item.is_liked}"
+      puts "    Image: #{item.image_url}"
+      puts "    Short URL: #{item.short_url[0..50]}..."
+    end
+  end
+else
+  puts "No library items found"
+end
+```
+
 ## Available Modules
 
 ### ✅ Currently Implemented
@@ -526,6 +615,8 @@ end
 
 #### Libraries Module
 - **Get Libraries**: `client.get_libraries` - Get user's document libraries with categories and items
+- **Get Library Categories**: `client.get_library_categories(library_id)` - Get detailed library information and categories by library ID
+- **Get Library Items**: `client.get_library_items(library_id, category_id)` - Get library items by library ID and category ID
 
 ## Complete Examples
 
@@ -789,6 +880,31 @@ libraries.libraries.first(3).each do |library|
 end
 puts ""
 
+# Get detailed library information
+if libraries.libraries.any?
+  first_library_id = libraries.libraries.first.id
+  library_details = client.get_library_categories(first_library_id)
+  
+  puts "📚 Library Details (ID: #{first_library_id}):"
+  puts "  Name: #{library_details.library.name}"
+  puts "  Type: #{library_details.library.library_type} | View: #{library_details.library.view_mode}"
+  puts "  Total items: #{library_details.library.total_items_count}"
+  puts "  Categories: #{library_details.library.categories.length}"
+  puts "  Edit access: #{library_details.library.edit_access}"
+  
+  # Get library items from first category
+  if library_details.library.categories.any?
+    first_category_id = library_details.library.categories.first.id
+    library_items = client.get_library_items(first_library_id, first_category_id)
+    
+    puts "📚 Library Items (Category: #{library_items.category_name}):"
+    puts "  View mode: #{library_items.view_mode} | Library type: #{library_items.library_type}"
+    puts "  Items count: #{library_items.library_items.length}"
+    puts "  Can add: #{library_items.can_add}"
+  end
+end
+puts ""
+
 # Get core value tags
 tags = client.core_value_tags
 
@@ -971,11 +1087,11 @@ This SDK uses **real TDD** - no mocking, only actual OAuth testing:
 - ✅ **Notifications Module**: My priority items for requests, events, quizzes, surveys, tasks, and todos (1 endpoint)
 - ✅ **Feeds Module**: User activity feeds with unread counts and feed details (1 endpoint)
 - ✅ **Posts Module**: Get all posts with filtering options and get post by ID (2 endpoints)
-- ✅ **Libraries Module**: Get user's document libraries with categories and items (1 endpoint)
+- ✅ **Libraries Module**: Get user's document libraries with categories and items, get library categories by ID, and get library items by library and category ID (3 endpoints)
 - ✅ **Error Handling**: Comprehensive error logging and testing
 - ✅ **OAuth Flow**: Token management and refresh
 
-**Total: 18 API endpoints across 7 modules**
+**Total: 20 API endpoints across 7 modules**
 
 ## Contributing
 

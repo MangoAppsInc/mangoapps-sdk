@@ -5,6 +5,35 @@ All notable changes to the MangoApps Ruby SDK will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2024-12-19
+
+### Added
+- **Get Library Items API** in Libraries Module
+  - `client.get_library_items(library_id, category_id)` - Get library items by library ID and category ID
+  - Access to library items including external links and attachments with full metadata
+  - Support for different link types (ExternalLink, Attachment) with specific properties
+  - Clean dot notation access: `response.library_items` with comprehensive item data
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for get library items API (3 total libraries tests)
+- **Documentation** - Updated README with get library items examples and complete workflow
+- **API Completeness** - Libraries module now includes 3 comprehensive endpoints for complete library management
+
+## [0.3.1] - 2024-12-19
+
+### Added
+- **Get Library Categories API** in Libraries Module
+  - `client.get_library_categories(library_id)` - Get detailed library information and categories by library ID
+  - Access to comprehensive library details including properties, metadata, and all categories
+  - Clean dot notation access: `response.library` with detailed library data and categories
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for get library categories API (2 total libraries tests)
+- **Documentation** - Updated README with get library categories examples and complete workflow
+- **API Completeness** - Libraries module now includes 2 comprehensive endpoints for complete library management
+
 ## [0.3.0] - 2024-12-19
 
 ### Added

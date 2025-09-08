@@ -35,7 +35,6 @@ RSpec.describe "MangoApps Feeds Module" do
           expect(feed).to respond_to(:updated_at)
           puts "✅ Feeds structure validated"
           puts "📊 Found #{response.feeds.length} feeds"
-          puts "📰 Sample feed: #{feed.feed_property.title} (ID: #{feed.id})"
           puts "👤 From: #{feed.from_user.name} | Group: #{feed.group_name}"
           puts "📅 Created: #{Time.at(feed.created_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
         else

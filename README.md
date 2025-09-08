@@ -139,6 +139,23 @@ if libraries.libraries.any?
     puts "Library items: #{library_items.library_items.length} items in #{library_items.category_name}"
   end
 end
+
+# Get user trackers
+trackers = client.get_trackers
+puts "User trackers: #{trackers.trackers.length}"
+
+# Get user folders
+folders = client.get_folders
+puts "User folders: #{folders.folders.length}"
+
+# Get files from first folder with content
+if folders.folders.any?
+  folder_with_content = folders.folders.find { |f| f.child_count.to_i > 0 }
+  if folder_with_content
+    folder_files = client.get_folder_files(folder_with_content.id, include_folders: "Y")
+    puts "Folder files: #{folder_files.files.length} items in #{folder_files.name}"
+  end
+end
 ```
 
 #### Manual OAuth Flow
@@ -580,6 +597,124 @@ else
 end
 ```
 
+#### Trackers Management
+```ruby
+# Get user's trackers
+trackers = client.get_trackers
+
+# Access trackers data
+puts "📊 User Trackers:"
+puts "  Total trackers: #{trackers.trackers.length}"
+puts "  Transaction ID: #{trackers.transaction_id || 'None'}"
+puts ""
+
+# Display recent trackers
+puts "📊 Recent Trackers:"
+trackers.trackers.first(5).each do |tracker|
+  puts "  • #{tracker.name} (ID: #{tracker.id})"
+  puts "    Last submission: #{Time.at(tracker.last_submission_date.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+  puts "    Conversation: #{tracker.conversation_name} (ID: #{tracker.conversation_id})"
+  puts "    Pinned: #{tracker.is_pinned} | Can share: #{tracker.can_share}"
+  
+  # Access tracker icon info
+  if tracker.tracker_icon_info
+    puts "    Icon: #{tracker.tracker_icon_info.color_code} | Class: #{tracker.tracker_icon_info.icon_url}"
+  end
+  
+  puts "    MLink: #{tracker.mlink[0..50]}..."
+  puts ""
+end
+```
+
+#### Attachments Management
+```ruby
+# Get user's folders
+folders = client.get_folders
+
+# Access folders data
+puts "📁 User Folders:"
+puts "  Total folders: #{folders.folders.length}"
+puts "  Transaction ID: #{folders.transaction_id || 'None'}"
+puts ""
+
+# Display folders
+puts "📁 Available Folders:"
+folders.folders.each do |folder|
+  puts "  • #{folder.name} (ID: #{folder.id})"
+  puts "    Path: #{folder.relativePath}"
+  puts "    Child count: #{folder.child_count} | Can save: #{folder.can_save}"
+  puts "    Pinned: #{folder.is_pinned} | Virtual: #{folder.is_virtual_folder}"
+  puts "    Folder rel: #{folder.folder_rel} | Type: #{folder.folder_type_from_db || 'None'}"
+  puts "    Show in upload: #{folder.show_in_upload} | Show in move: #{folder.show_in_move}"
+  puts "    Filter: #{folder.filter} | Show permissions: #{folder.show_permission_options}"
+  
+  # Show conversation and user IDs if available
+  if folder.conversation_id
+    puts "    Conversation ID: #{folder.conversation_id}"
+  end
+  if folder.user_id
+    puts "    User ID: #{folder.user_id}"
+  end
+  
+  puts ""
+end
+```
+
+#### File and Folder Management
+```ruby
+# Get user's folders first
+folders = client.get_folders
+
+# Find a folder with content
+if folders.folders.any?
+  folder = folders.folders.find { |f| f.child_count.to_i > 0 }
+  
+  if folder
+    puts "📁 Exploring folder: #{folder.name} (ID: #{folder.id})"
+    
+    # Get files and folders inside this folder
+    folder_contents = client.get_folder_files(folder.id, include_folders: "Y")
+    
+    puts "📁 Folder Contents:"
+    puts "  Folder name: #{folder_contents.name}"
+    puts "  Total count: #{folder_contents.total_count}"
+    puts "  Role: #{folder_contents.role_name}"
+    puts "  Domain suspended: #{folder_contents.is_domain_suspended}"
+    puts "  Show in upload: #{folder_contents.show_in_upload}"
+    puts ""
+    
+    # Display files and folders
+    puts "📁 Files and Folders:"
+    folder_contents.files.first(10).each do |item|
+      puts "  • #{item.filename} (ID: #{item.id})"
+      puts "    Type: #{item.is_folder ? 'Folder' : 'File'}"
+      puts "    Size: #{item.size} bytes"
+      puts "    Uploader: #{item.uploader_name} (ID: #{item.user_id})"
+      puts "    Updated: #{Time.at(item.updated_at.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+      puts "    Visibility: #{item.visibility} | Privacy: #{item.privacy_type}"
+      puts "    Pinned: #{item.is_pinned} | Liked: #{item.is_liked}"
+      puts "    Can save: #{item.can_save} | Show permissions: #{item.show_permission_options}"
+      
+      # Show role permissions
+      if item.role
+        puts "    Permissions: Edit: #{item.role.can_edit} | Share: #{item.role.can_share} | Restore: #{item.role.can_restore}"
+      end
+      
+      # Show links
+      if item.mLink
+        puts "    MLink: #{item.mLink[0..50]}..."
+      end
+      
+      puts ""
+    end
+  else
+    puts "No folders with content found"
+  end
+else
+  puts "No folders found"
+end
+```
+
 ## Available Modules
 
 ### ✅ Currently Implemented
@@ -617,6 +752,13 @@ end
 - **Get Libraries**: `client.get_libraries` - Get user's document libraries with categories and items
 - **Get Library Categories**: `client.get_library_categories(library_id)` - Get detailed library information and categories by library ID
 - **Get Library Items**: `client.get_library_items(library_id, category_id)` - Get library items by library ID and category ID
+
+#### Trackers Module
+- **Get Trackers**: `client.get_trackers` - Get user's trackers with submission dates and conversation details
+
+#### Attachments Module
+- **Get Folders**: `client.get_folders` - Get user's file folders with permissions and metadata
+- **Get Folder Files**: `client.get_folder_files(folder_id, include_folders: "Y")` - Get files and folders inside a specific folder
 
 ## Complete Examples
 
@@ -905,6 +1047,51 @@ if libraries.libraries.any?
 end
 puts ""
 
+# Get user trackers
+trackers = client.get_trackers
+
+puts "📊 User Trackers:"
+puts "  Total trackers: #{trackers.trackers.length}"
+puts ""
+
+# Display recent trackers
+puts "📊 Recent Trackers:"
+trackers.trackers.first(3).each do |tracker|
+  puts "  • #{tracker.name} (ID: #{tracker.id})"
+  puts "    Last submission: #{Time.at(tracker.last_submission_date.to_i).strftime('%Y-%m-%d %H:%M:%S')}"
+  puts "    Conversation: #{tracker.conversation_name}"
+  puts "    Pinned: #{tracker.is_pinned} | Can share: #{tracker.can_share}"
+end
+puts ""
+
+# Get user folders
+folders = client.get_folders
+
+puts "📁 User Folders:"
+puts "  Total folders: #{folders.folders.length}"
+puts ""
+
+# Display first few folders
+puts "📁 Available Folders:"
+folders.folders.first(3).each do |folder|
+  puts "  • #{folder.name} (ID: #{folder.id})"
+  puts "    Path: #{folder.relativePath} | Child count: #{folder.child_count}"
+  puts "    Can save: #{folder.can_save} | Pinned: #{folder.is_pinned}"
+end
+puts ""
+
+# Get files from first folder with content
+if folders.folders.any?
+  folder_with_content = folders.folders.find { |f| f.child_count.to_i > 0 }
+  if folder_with_content
+    folder_files = client.get_folder_files(folder_with_content.id, include_folders: "Y")
+    puts "📁 Folder Files:"
+    puts "  Folder: #{folder_files.name} | Total: #{folder_files.total_count}"
+    puts "  Role: #{folder_files.role_name} | Upload enabled: #{folder_files.show_in_upload}"
+  end
+end
+puts ""
+
 # Get core value tags
 tags = client.core_value_tags
 
@@ -1088,10 +1275,12 @@ This SDK uses **real TDD** - no mocking, only actual OAuth testing:
 - ✅ **Feeds Module**: User activity feeds with unread counts and feed details (1 endpoint)
 - ✅ **Posts Module**: Get all posts with filtering options and get post by ID (2 endpoints)
 - ✅ **Libraries Module**: Get user's document libraries with categories and items, get library categories by ID, and get library items by library and category ID (3 endpoints)
+- ✅ **Trackers Module**: Get user's trackers with submission dates and conversation details (1 endpoint)
+- ✅ **Attachments Module**: Get user's file folders with permissions and metadata, and get files and folders inside specific folders (2 endpoints)
 - ✅ **Error Handling**: Comprehensive error logging and testing
 - ✅ **OAuth Flow**: Token management and refresh
 
-**Total: 20 API endpoints across 7 modules**
+**Total: 23 API endpoints across 9 modules**
 
 ## Contributing
 

@@ -26,6 +26,8 @@ show_usage() {
     echo "   feeds         - Feeds module tests"
     echo "   posts         - Posts module tests"
     echo "   libraries     - Libraries module tests"
+    echo "   trackers      - Trackers module tests"
+    echo "   attachments   - Attachments module tests"
     echo "   all           - All modules (default)"
     echo ""
 }
@@ -148,8 +150,16 @@ run_module_tests() {
             spec_file="spec/mangoapps/libraries_spec.rb"
             module_display="📚 Libraries module"
             ;;
+        "trackers")
+            spec_file="spec/mangoapps/trackers_spec.rb"
+            module_display="📊 Trackers module"
+            ;;
+        "attachments")
+            spec_file="spec/mangoapps/attachments_spec.rb"
+            module_display="📁 Attachments module"
+            ;;
         "all")
-            spec_file="spec/mangoapps/learn_spec.rb spec/mangoapps/users_spec.rb spec/mangoapps/recognitions_spec.rb spec/mangoapps/notifications_spec.rb spec/mangoapps/feeds_spec.rb spec/mangoapps/posts_spec.rb spec/mangoapps/libraries_spec.rb"
+            spec_file="spec/mangoapps/learn_spec.rb spec/mangoapps/users_spec.rb spec/mangoapps/recognitions_spec.rb spec/mangoapps/notifications_spec.rb spec/mangoapps/feeds_spec.rb spec/mangoapps/posts_spec.rb spec/mangoapps/libraries_spec.rb spec/mangoapps/trackers_spec.rb spec/mangoapps/attachments_spec.rb"
             module_display="🔗 All modules"
             ;;
         *)
@@ -190,6 +200,8 @@ if run_module_tests "$MODULE"; then
         echo "  📰 Feeds module: ✅ All endpoints tested and working"
         echo "  📝 Posts module: ✅ All endpoints tested and working"
         echo "  📚 Libraries module: ✅ All endpoints tested and working"
+        echo "  📊 Trackers module: ✅ All endpoints tested and working"
+        echo "  📁 Attachments module: ✅ All endpoints tested and working"
         echo ""
         print_status "You can now start developing with confidence!"
         echo "  - All API endpoints are tested and working"
@@ -217,6 +229,12 @@ if run_module_tests "$MODULE"; then
                 ;;
             "libraries")
                 echo "  📚 Libraries module: ✅ All endpoints tested and working"
+                ;;
+            "trackers")
+                echo "  📊 Trackers module: ✅ All endpoints tested and working"
+                ;;
+            "attachments")
+                echo "  📁 Attachments module: ✅ All endpoints tested and working"
                 ;;
         esac
         echo ""

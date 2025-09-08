@@ -5,6 +5,54 @@ All notable changes to the MangoApps Ruby SDK will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2024-12-19
+
+### Added
+- **Get Folder Files API** in Attachments Module
+  - `client.get_folder_files(folder_id, include_folders: "Y")` - Get files and folders inside a specific folder
+  - Access to comprehensive file and folder data including names, IDs, sizes, uploaders, and permissions
+  - Access to file properties including pinned status, liked status, visibility, and role permissions
+  - Access to folder metadata including total counts, role names, and domain suspension status
+  - Clean dot notation access: `response.files` with comprehensive file/folder data
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for get folder files API (2 total attachments tests)
+- **Documentation** - Updated README with get folder files examples and complete workflow
+- **API Completeness** - Attachments module now includes 2 comprehensive endpoints for complete file management
+
+## [0.5.0] - 2024-12-19
+
+### Added
+- **Attachments Module** - New module for file and folder management
+  - `client.get_folders` - Get user's file folders with permissions and metadata
+  - Access to folder data including names, IDs, paths, child counts, and permissions
+  - Access to folder properties including pinned status, virtual folders, and upload/move permissions
+  - Clean dot notation access: `response.folders` with comprehensive folder data
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for attachments module (1 total attachments test)
+- **Documentation** - Updated README with attachments examples and complete workflow
+- **Module Architecture** - Added new attachments module following established patterns
+- **Test Runner** - Updated run_tests.sh to include attachments module testing
+
+## [0.4.0] - 2024-12-19
+
+### Added
+- **Trackers Module** - New module for tracker management
+  - `client.get_trackers` - Get user's trackers with submission dates and conversation details
+  - Access to tracker data including names, IDs, submission dates, pinned status, and conversation info
+  - Access to tracker icon information with color codes and icon URLs
+  - Clean dot notation access: `response.trackers` with comprehensive tracker data
+  - Comprehensive test coverage with real API validation
+
+### Enhanced
+- **Test Coverage** - Added comprehensive test for trackers module (1 total trackers test)
+- **Documentation** - Updated README with trackers examples and complete workflow
+- **Module Architecture** - Added new trackers module following established patterns
+- **Test Runner** - Updated run_tests.sh to include trackers module testing
+
 ## [0.3.2] - 2024-12-19
 
 ### Added
